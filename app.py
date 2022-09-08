@@ -1,5 +1,6 @@
 from flask import Flask, redirect, render_template, session, request
 from flask_session import Session
+import urllib
 import pymongo
 app = Flask(__name__)
 app.secret_key = "testing"
@@ -12,7 +13,7 @@ def menu():
 	return render_template('menu.html')
 	return 'Hello, World!'
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['POST', 'GET'])
 def login():
     message = 'Please login to your account'
     if "username" in session and session['username'] != None:
@@ -29,7 +30,7 @@ def login():
         # db = client.User
         # records = db.cashManagement
         user_found = readDb( "Users" , {"username": username})
-        # print("user Found" + email_found)
+        print("user Found" + str(user_found) + username)
         if user_found and "username" in user_found and "password" in user_found:
             username = user_found['username']
             passwordcheck = user_found['password']
