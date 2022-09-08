@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Login System{% endblock %}
+
+{% block content %}
+
+{% if message  %}
+    <div class="alert alert-secondary" role="alert">
+        <p>{{ message }}</p>
+    </div>
+{% endif %}
+
+<form action="/login" method="POST">
+<!--<div class="position-absolute top-50 start-50 translate-middle">-->
+<!--    <div class="row d-flex justify-content-center">-->
+        <h2>Login</h2> <br>
+  <div class="form-group">
+      <label for="username">Username</label>
+      <input name="username" v-bind:class="{'form-control':true, 'is-invalid' : !validEmail(email) && emailBlured}" v-on:blur="emailBlured = true"  id="username"  placeholder="Enter username">
+  </div><br>
+    <div class="form-group">
+      <label for="InputPassword">Password</label>
+      <input type="password" name="password" v-bind:class="{'form-control':true, 'is-invalid' : !validEmail(email) && emailBlured}" v-on:blur="emailBlured = true" id="InputPassword" placeholder="Password">
+  </div>
+  <button type="submit" class="btn btn-primary text-center d-flex flex-column">Submit</button>
+<!--        </div>-->
+</form>
+{% endblock %}
