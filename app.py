@@ -15,8 +15,9 @@ app.secret_key = "testing"
 
 @app.route('/')
 def menu():
-	return render_template('menu.html')
-	return 'Hello, World!'
+	if "username" in session and session['username'] != None:
+		return render_template('menu.html')
+	return render_template('login.html', message='Please login to your account')
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -161,4 +162,9 @@ def generate_debit_receipt(document):
         x = mycol.insert_one(document)
         return x;
 
+
+@app.route("/logout")
+def logout():
+    session["username"] = None
+    return redirect("/")
 	
