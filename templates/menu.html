@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Login System{% endblock %}
+
+{% block content %}
+
+<a href = '/scanQRdebit' class = "button">Debit Money</a><br>
+{% if  type == 'superuser' %}
+{% if  logged_in == 'true' %}
+
+
+<a href = '/scanQRcredit' class = "button">Credit Money</a><br>
+
+
+{% endif %}
+{% endif %}
+<a href = '/TransactionReport' class = "button">Generate Report</a> <br>
+
+{% endblock %}
