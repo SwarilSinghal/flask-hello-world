@@ -13,7 +13,7 @@ def menu():
 
 @app.route('/login')
 def login():
-message = 'Please login to your account'
+    message = 'Please login to your account'
     if "username" in session and session['username'] != None:
         return redirect('/')
     # return render_template('login.html', message=message)
