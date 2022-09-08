@@ -43,9 +43,11 @@
 </form>
     <script>
         function last10Transaction(code){
-            return 1;
+	window.location = '/lastTransactions?code='+code;	
+          
+	}
 
-        }
+
         function credit(balance, code ) {
         var amount_list = document.getElementsByName('amount');
         amount =0;

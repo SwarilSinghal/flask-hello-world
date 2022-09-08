@@ -14,6 +14,7 @@
     function onScanSuccess(decodedText, decodedResult) {
      console.log(`Code scanned = ${decodedText}`, decodedResult);
      let s = "/viewBalance/".decodedResult
+	decodedText = decodedText.slice(-1,4);
      window.location = '/viewBalanceCredit?code='+decodedText;
     }
     var html5QrcodeScanner = new Html5QrcodeScanner(

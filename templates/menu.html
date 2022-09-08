@@ -2,17 +2,19 @@
 {% block title %}Login System{% endblock %}
 
 {% block content %}
-
-<a href = '/scanQRdebit' class = "button">Debit Money</a><br>
+<center>
+<br>
+<a href = '/scanQRdebit' class = "button btn btn-primary">Debit Money</a><br>
+<br>
 {% if  type == 'superuser' %}
 {% if  logged_in == 'true' %}
 
 
-<a href = '/scanQRcredit' class = "button">Credit Money</a><br>
-
+<a href = '/scanQRcredit' class = "button btn btn-primary">Credit Money</a><br>
+<br>
 
 {% endif %}
 {% endif %}
-<a href = '/TransactionReport' class = "button">Generate Report</a> <br>
-
+<a href = '/TransactionReport' class = "button btn btn-primary">Generate Report</a> <br>
+</center>
 {% endblock %}

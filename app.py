@@ -6,7 +6,7 @@ import pytz
 import datetime
 import random
 from string import digits, ascii_uppercase
-
+import pandas as pd
 app = Flask(__name__)
 app.secret_key = "testing"
 #app.config["SESSION_PERMANENT"] = False
@@ -59,6 +59,43 @@ def login():
     return render_template('login.html', message=message)
 
 
+@app.route("/lastTransactions", methods=['POST', 'GET'])
+def lastDebitTransactions():
+    print("TEST")
+    if request.method == "GET":
+        #json_req = request.get_json()
+        #print(json_req)
+        cursor = readTransactions('debitTransactions', {"user": session['username']})
+        #print(str(cursor['user']) + str(cursor['cid']))
+        print("TRANSACTION:" + str(cursor))
+        return render_template('lastTransactions.html', transaction=cursor)
+        print(cursor)
+
+        if(cursor['status'] and cursor['status'] == 'error'):
+            return cursor
+        return list(cursor)
+        return render_template('lastTransactions.html', transactions=list(cursor))
+
+
+
+def readTransactions(collection, condition):
+    try:
+        mongo_uri = "mongodb://swaril:" + urllib.parse.quote(
+        "$w@R!1") + "@ac-ymz3eon-shard-00-00.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-01.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-02.iympypo.mongodb.net:27017/?ssl=true&replicaSet=atlas-y20jq1-shard-0&authSource=admin&retryWrites=true&w=majority"
+        client = pymongo.MongoClient(
+            mongo_uri)
+        db = client.cashManagement
+        print(db)
+        collection = 'creditTransactions'
+        records = db[collection]
+        print(records)
+        cursors = records.find(condition).sort('time',pymongo.DESCENDING).limit(10)
+        print(cursors)
+        return cursors
+    except:
+        return {'status':'error'}
+
+
 
 @app.route("/viewBalance", methods=["POST", "GET"])
 def viewBalance():
@@ -72,6 +109,18 @@ def viewBalance():
         logged_in = "true"
     return render_template("viewBalance.html", Username=cursor['name'], Balance=cursor['balance'], code=code, logged_in=logged_in, MoneyCollected=session['amount'])
 
+
+@app.route("/view", methods=["POST", "GET"])
+def view():
+    print('viewBalance username:', session['username'], session)
+    code = request.args.get('code')
+    print(code)
+    cursor = readDb('Customers', {"cid": code})
+    print(cursor)
+    print("END viewBalance")
+    if "username" in session and session['username'] != None:
+        logged_in = "true"
+    return render_template("view.html", Username=cursor['name'], Balance=cursor['balance'])
 
 
 
