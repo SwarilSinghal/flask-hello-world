@@ -16,7 +16,8 @@ app.secret_key = "testing"
 @app.route('/')
 def menu():
 	if "username" in session and session['username'] != None:
-		return render_template('menu.html')
+		
+		return render_template('menu.html',logged_in = 'true', type=session['type'])
 	return render_template('login.html', message='Please login to your account')
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -47,6 +48,7 @@ def login():
                 session["username"] = username
                 session['type'] = user_found['type']
                 session['amount'] = user_found['amount']
+                session['amount_credited'] = user_found['amount_credited']
                 return redirect('/')
             else:
                 message = 'Wrong password'
@@ -55,6 +57,22 @@ def login():
             message = 'Email not found'
             return render_template('login.html', message=message)
     return render_template('login.html', message=message)
+
+
+
+@app.route("/viewBalance", methods=["POST", "GET"])
+def viewBalance():
+    print('viewBalance username:', session['username'], session)
+    code = request.args.get('code')
+    print(code)
+    cursor = readDb('Customers', {"cid": code})
+    print(cursor)
+    print("END viewBalance")
+    if "username" in session and session['username'] != None:
+        logged_in = "true"
+    return render_template("viewBalance.html", Username=cursor['name'], Balance=cursor['balance'], code=code, logged_in=logged_in, MoneyCollected=session['amount'])
+
+
 
 
 def readDb(collection, condition):
@@ -79,18 +97,29 @@ def scanQRdebit():
     return render_template('scanQRDebit.html')
 
 
+@app.route("/scanQRcredit")
+def scanQRcredit():
+    print("HOME session:", session)
+    if "username" not in session or ("username" in session and session['username'] == None):
+        return render_template("login.html")
+    return render_template('scanQRcredit.html')
+
+
 
 @app.route("/viewBalanceCredit", methods=["POST", "GET"])
-def viewBalance():
+def viewBalanceCredit():
+    if "username" not in session or ("username" in session and session['username'] == None):
+        return render_template("login.html", message = 'Please Login!')
     print('viewBalance username:', session['username'], session)
     code = request.args.get('code')
     print(code)
     cursor = readDb('Customers', {"cid": code})
+    # Username = cursor['name']?cursor['name']:''
     print(cursor)
     print("END viewBalance")
     if "username" in session and session['username'] != None:
         logged_in = "true"
-    return render_template("viewBalance.html", Username=cursor['name'], Balance=cursor['balance'], code=code, logged_in=logged_in, MoneyCollected=session['amount'])
+    return render_template("viewBalanceCredit.html", Username=cursor['name'], Balance=cursor['balance'], code=code, logged_in=logged_in, phone_number = cursor['phone_number'], MoneyCollected=session['amount'], MoneyDeposited=session['amount_credited'])
 
 
 
@@ -123,7 +152,7 @@ def debit():
         print("final Balance:", final_balance)
         resp = update_db("Customers", {'balance': final_balance}, {'cid' : str(json_req['code'])})
         print(resp)
-        return {'status':'success', 'balance':final_balance, 'amount':json_req['amount'] }
+        return {'status':'success', 'balance':final_balance, 'amount':json_req['amount'] , 'total_amount_debited' : amount_collected}
     return {'status': 'error', 'message' : 'Try Again'}
 
 
@@ -161,6 +190,52 @@ def generate_debit_receipt(document):
         mycol = mydb["debitTransactions"]
         x = mycol.insert_one(document)
         return x;
+
+
+def generate_credit_receipt(document):
+    if("username" in session):
+        document['user'] = session['username']
+        document['txn_id'] = 'CT' + rand_string()
+        document['time'] = datetime.datetime.now(pytz.timezone('Asia/Kolkata'))
+        mongo_uri = "mongodb://swaril:" + urllib.parse.quote(
+            "$w@R!1") + "@ac-ymz3eon-shard-00-00.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-01.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-02.iympypo.mongodb.net:27017/?ssl=true&replicaSet=atlas-y20jq1-shard-0&authSource=admin&retryWrites=true&w=majority"
+        client = pymongo.MongoClient(
+            mongo_uri)
+
+        mydb = client["cashManagement"]
+        mycol = mydb["creditTransactions"]
+        x = mycol.insert_one(document)
+        return x
+
+
+
+@app.route("/credit", methods=["POST", "GET"])
+def credit():
+    if "username" not in session or ("username" in session and session['username'] == None):
+        return render_template("login.html")
+    if hasattr(request, 'method') and request.method == "POST":
+        json_req = request.get_json()
+        print("JSON:" + str(json_req))
+        cursor = readDb('Customers', {"cid": str(json_req['code'])})
+        print('checking paraments',json_req['code'], json_req['amount'])
+        print("Read DB:", cursor)
+        final_balance = int(cursor['balance']) + int(json_req['amount'])
+        document = {'balance': final_balance, 'name': json_req['name'], 'phone_number': json_req['phone_number']}
+        print("final Balance:", final_balance)
+        resp = update_db("Customers", document, {'cid' : str(json_req['code'])})
+        print("UPDATE CUSTOMERS DB:" + str(resp))
+        cursor = readDb('Users', {"username": str(session['username'])})
+        total_amount = int(cursor['amount_credited']) + int(json_req['amount'])
+        resp = update_db("Users", {'amount_credited' : total_amount}, {"username": str(session['username'])})
+        print("UPDATE USERS DB:" + str(resp))
+        document = {'amount': json_req['amount'], 'cid' : json_req['code'] }
+        receipt = generate_credit_receipt(document)
+        print("CREATE RECEIPT:" + str(receipt))
+        document = {'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'cid' : json_req['code'], 'status':'success' }
+        return document
+    return {'status': 'error'}
+
+
 
 
 @app.route("/logout")
