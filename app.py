@@ -1,5 +1,6 @@
-from flask import Flask, render_template, session
+from flask import Flask, redirect, render_template, session, request
 from flask_session import Session
+import pymongo
 app = Flask(__name__)
 app.secret_key = "testing"
 #app.config["SESSION_PERMANENT"] = False
@@ -8,7 +9,7 @@ app.secret_key = "testing"
 
 @app.route('/')
 def menu():
-	return render_template('menu.html');
+	return render_template('menu.html')
 	return 'Hello, World!'
 
 @app.route('/login')
