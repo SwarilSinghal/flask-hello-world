@@ -12,7 +12,7 @@ def menu():
 	return render_template('menu.html')
 	return 'Hello, World!'
 
-@app.route('/login')
+@app.route('/login', methods=['POST'])
 def login():
     message = 'Please login to your account'
     if "username" in session and session['username'] != None:
