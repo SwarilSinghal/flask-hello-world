@@ -35,6 +35,10 @@ def login():
         if user_found and "username" in user_found and "password" in user_found:
             username = user_found['username']
             passwordcheck = user_found['password']
+            if user_found and 'isLoggedIn' in user_found and user_found['isLoggedIn'] == True :
+                message = 'User is alredy Logged in in another device'
+                return render_template('login.html', message=message)
+            resp = update_db("Users", {'isLoggedIn' : True}, {"username": username})
             # if bcrypt.checkpw(password.encode('utf-8'), passwordcheck):
             if passwordcheck == password:
                 # print(username)
@@ -89,14 +93,18 @@ def readTransactions(collection, condition):
 @app.route("/viewBalance", methods=["POST", "GET"])
 def viewBalance():
     # print('viewBalance username:', session['username'], session)
+    if "username" not in session or ("username" in session and session['username'] == None):
+        return render_template("login.html")
+
     code = request.args.get('code')
+    if code is None:
+        return render_template("viewBalance.html", Username='', Balance='', code=code, MoneyCollected=session['amount'])   
     # print(code)
     cursor = readDb('Customers', {"cid": code})
     # print(cursor)
     # print("END viewBalance")
-    if "username" in session and session['username'] != None:
-        logged_in = "true"
-    return render_template("viewBalance.html", Username=cursor['name'], Balance=cursor['balance'], code=code, logged_in=logged_in, MoneyCollected=session['amount'])
+    logged_in = "true"
+    return render_template("viewBalance.html", Username=cursor['name'], Balance=cursor['balance'], code=code, MoneyCollected=session['amount'])
 
 
 @app.route("/view", methods=["POST", "GET"])
@@ -169,6 +177,10 @@ def debit():
         json_req = request.get_json()
         # print(json_req)
         cursor = readDb('Customers', {"cid": str(json_req['code'])})
+        if cursor is None:
+            return {'status': 'error', 'message' : 'User Not Found'}
+        if cursor['status'] == 'error':
+            return {'status': 'error', 'message' : 'Try Again!'}
         print('checking paraments',json_req['code'], json_req['amount'])
         # isIntegar = isinstance(json_req['amount'], int)
         # if not isIntegar:
@@ -179,7 +191,7 @@ def debit():
             return {'status': 'error', 'message': 'Insufficient Balance'}
         user = readDb('Users', {'username': session['username']})
         if(user) :
-            amount_collected = int(user['amount']) + int(json_req['balance'])
+            amount_collected = int(session['amount']) + int(json_req['balance'])
         else:
             return {'status': 'error', 'message': "DB issues, try Again!"}
         resp = update_db('Users', {'amount': amount_collected}, {'username' : session['username']})
@@ -279,6 +291,7 @@ def credit():
 
 @app.route("/logout")
 def logout():
+    resp = update_db("Users", {'isLoggedIn' : False}, {"username": session['username']})
     session["username"] = None
     return redirect("/")
 	
