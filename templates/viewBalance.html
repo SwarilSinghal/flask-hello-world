@@ -76,10 +76,10 @@
             balance: balance
         }));
         xhr.onload = function() {
-          console.log("HELLO")
-          console.log(this.responseText);
+        //   console.log("HELLO")
+        //   console.log(this.responseText);
           var data = JSON.parse(this.responseText);
-          console.log(data);
+        //   console.log(data);
           if(data['status'] == 'success')
             alert("Debit Successful of Rs." + data['amount']);
           else {
@@ -87,7 +87,7 @@
                 alert(data['message']);
             }
           }
-	console.log([data['total_amount_debited']])
+	// console.log([data['total_amount_debited']])
           if( data['balance'] )
     	        document.getElementById('InputBalance').value = data['balance'];
     		document.getElementById('MoneyCollected').value = data['total_amount_debited'];

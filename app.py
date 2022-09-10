@@ -1,5 +1,5 @@
 from flask import Flask, redirect, render_template, session, request
-from flask_session import Session
+#from flask_session import Session
 import urllib
 import pymongo
 import pytz
@@ -30,21 +30,14 @@ def login():
         print("inside request")
         username = request.form.get("username")
         password = request.form.get("password")
-        # mongo_uri = "mongodb://swaril:" + urllib.parse.quote(
-        #     "$w@R!1") + "@ac-ymz3eon-shard-00-00.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-01.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-02.iympypo.mongodb.net:27017/?ssl=true&replicaSet=atlas-y20jq1-shard-0&authSource=admin&retryWrites=true&w=majority"
-        # client = pymongo.MongoClient(
-        #     mongo_uri)
-        # db = client.User
-        # records = db.cashManagement
         user_found = readDb( "Users" , {"username": username})
-        print("user Found" + str(user_found) + username)
+        #print("user Found" + str(user_found) + username)
         if user_found and "username" in user_found and "password" in user_found:
             username = user_found['username']
             passwordcheck = user_found['password']
-
             # if bcrypt.checkpw(password.encode('utf-8'), passwordcheck):
             if passwordcheck == password:
-                print(username)
+                # print(username)
                 session["username"] = username
                 session['type'] = user_found['type']
                 session['amount'] = user_found['amount']
@@ -63,14 +56,10 @@ def login():
 def lastDebitTransactions():
     print("TEST")
     if request.method == "GET":
-        #json_req = request.get_json()
-        #print(json_req)
         cursor = readTransactions('debitTransactions', {"user": session['username']})
         #print(str(cursor['user']) + str(cursor['cid']))
-        print("TRANSACTION:" + str(cursor))
+        # print("TRANSACTION:" + str(cursor))
         return render_template('lastTransactions.html', transaction=cursor)
-        print(cursor)
-
         if(cursor['status'] and cursor['status'] == 'error'):
             return cursor
         return list(cursor)
@@ -85,12 +74,12 @@ def readTransactions(collection, condition):
         client = pymongo.MongoClient(
             mongo_uri)
         db = client.cashManagement
-        print(db)
+        # print(db)
         collection = 'creditTransactions'
         records = db[collection]
-        print(records)
+        # print(records)
         cursors = records.find(condition).sort('time',pymongo.DESCENDING).limit(10)
-        print(cursors)
+        # print(cursors)
         return cursors
     except:
         return {'status':'error'}
@@ -99,12 +88,12 @@ def readTransactions(collection, condition):
 
 @app.route("/viewBalance", methods=["POST", "GET"])
 def viewBalance():
-    print('viewBalance username:', session['username'], session)
+    # print('viewBalance username:', session['username'], session)
     code = request.args.get('code')
-    print(code)
+    # print(code)
     cursor = readDb('Customers', {"cid": code})
-    print(cursor)
-    print("END viewBalance")
+    # print(cursor)
+    # print("END viewBalance")
     if "username" in session and session['username'] != None:
         logged_in = "true"
     return render_template("viewBalance.html", Username=cursor['name'], Balance=cursor['balance'], code=code, logged_in=logged_in, MoneyCollected=session['amount'])
@@ -112,12 +101,12 @@ def viewBalance():
 
 @app.route("/view", methods=["POST", "GET"])
 def view():
-    print('viewBalance username:', session['username'], session)
+    # print('viewBalance username:', session['username'], session)
     code = request.args.get('code')
-    print(code)
+    # print(code)
     cursor = readDb('Customers', {"cid": code})
-    print(cursor)
-    print("END viewBalance")
+    # print(cursor)
+    # print("END viewBalance")
     if "username" in session and session['username'] != None:
         logged_in = "true"
     return render_template("view.html", Username=cursor['name'], Balance=cursor['balance'])
@@ -159,13 +148,13 @@ def scanQRcredit():
 def viewBalanceCredit():
     if "username" not in session or ("username" in session and session['username'] == None):
         return render_template("login.html", message = 'Please Login!')
-    print('viewBalance username:', session['username'], session)
+    # print('viewBalance username:', session['username'], session)
     code = request.args.get('code')
-    print(code)
+    # print(code)
     cursor = readDb('Customers', {"cid": code})
     # Username = cursor['name']?cursor['name']:''
-    print(cursor)
-    print("END viewBalance")
+    # print(cursor)
+    # print("END viewBalance")
     if "username" in session and session['username'] != None:
         logged_in = "true"
     return render_template("viewBalanceCredit.html", Username=cursor['name'], Balance=cursor['balance'], code=code, logged_in=logged_in, phone_number = cursor['phone_number'], MoneyCollected=session['amount'], MoneyDeposited=session['amount_credited'])
@@ -178,13 +167,13 @@ def debit():
         return render_template("login.html")
     if hasattr(request, 'method') and request.method == "POST":
         json_req = request.get_json()
-        print(json_req)
+        # print(json_req)
         cursor = readDb('Customers', {"cid": str(json_req['code'])})
         print('checking paraments',json_req['code'], json_req['amount'])
         # isIntegar = isinstance(json_req['amount'], int)
         # if not isIntegar:
         #     return {'status' : 'error', 'message': 'Invalid Amount'}
-        print("Read DB:", cursor)
+        # print("Read DB:", cursor)
         final_balance = int(cursor['balance']) - int(json_req['amount'])
         if (final_balance < 0):
             return {'status': 'error', 'message': 'Insufficient Balance'}
@@ -194,13 +183,13 @@ def debit():
         else:
             return {'status': 'error', 'message': "DB issues, try Again!"}
         resp = update_db('Users', {'amount': amount_collected}, {'username' : session['username']})
-        print(resp)
+        # print(resp)
         document = {'amount': json_req['amount'], 'cid' : json_req['code'] }
         receipt = generate_debit_receipt(document)
 
-        print("final Balance:", final_balance)
+        # print("final Balance:", final_balance)
         resp = update_db("Customers", {'balance': final_balance}, {'cid' : str(json_req['code'])})
-        print(resp)
+        # print(resp)
         return {'status':'success', 'balance':final_balance, 'amount':json_req['amount'] , 'total_amount_debited' : amount_collected}
     return {'status': 'error', 'message' : 'Try Again'}
 
@@ -215,7 +204,7 @@ def update_db(collection, document, condition):
     records = db[collection]
     document = { "$set" : document}
     resp = records.update_one(condition, document)
-    print(resp)
+    # print(resp)
     cursor = readDb(collection, condition)
     return cursor
 
@@ -238,7 +227,7 @@ def generate_debit_receipt(document):
         mydb = client["cashManagement"]
         mycol = mydb["debitTransactions"]
         x = mycol.insert_one(document)
-        return x;
+        return x
 
 
 def generate_credit_receipt(document):
@@ -264,23 +253,24 @@ def credit():
         return render_template("login.html")
     if hasattr(request, 'method') and request.method == "POST":
         json_req = request.get_json()
-        print("JSON:" + str(json_req))
+        # print("JSON:" + str(json_req))
         cursor = readDb('Customers', {"cid": str(json_req['code'])})
-        print('checking paraments',json_req['code'], json_req['amount'])
-        print("Read DB:", cursor)
+        # print('checking paraments',json_req['code'], json_req['amount'])
+        # print("Read DB:", cursor)
         final_balance = int(cursor['balance']) + int(json_req['amount'])
         document = {'balance': final_balance, 'name': json_req['name'], 'phone_number': json_req['phone_number']}
-        print("final Balance:", final_balance)
+        # print("final Balance:", final_balance)
         resp = update_db("Customers", document, {'cid' : str(json_req['code'])})
-        print("UPDATE CUSTOMERS DB:" + str(resp))
+        # print("UPDATE CUSTOMERS DB:" + str(resp))
         cursor = readDb('Users', {"username": str(session['username'])})
         total_amount = int(cursor['amount_credited']) + int(json_req['amount'])
         resp = update_db("Users", {'amount_credited' : total_amount}, {"username": str(session['username'])})
-        print("UPDATE USERS DB:" + str(resp))
-        document = {'amount': json_req['amount'], 'cid' : json_req['code'] }
-        receipt = generate_credit_receipt(document)
-        print("CREATE RECEIPT:" + str(receipt))
+        # print("UPDATE USERS DB:" + str(resp))
+        # document = {'amount': json_req['amount'], 'cid' : json_req['code'] }
+       
+        # print("CREATE RECEIPT:" + str(receipt))
         document = {'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'cid' : json_req['code'], 'status':'success' }
+         receipt = generate_credit_receipt(document)
         return document
     return {'status': 'error'}
 
