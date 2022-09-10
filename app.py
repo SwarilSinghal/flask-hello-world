@@ -179,7 +179,7 @@ def debit():
         cursor = readDb('Customers', {"cid": str(json_req['code'])})
         if cursor is None:
             return {'status': 'error', 'message' : 'User Not Found'}
-        if cursor['status'] == 'error':
+        if 'status' in cursor and cursor['status'] == 'error':
             return {'status': 'error', 'message' : 'Try Again!'}
         print('checking paraments',json_req['code'], json_req['amount'])
         # isIntegar = isinstance(json_req['amount'], int)
