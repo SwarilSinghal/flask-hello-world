@@ -270,7 +270,7 @@ def credit():
        
         # print("CREATE RECEIPT:" + str(receipt))
         document = {'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'cid' : json_req['code'], 'status':'success' }
-         receipt = generate_credit_receipt(document)
+        receipt = generate_credit_receipt(document)
         return document
     return {'status': 'error'}
 
