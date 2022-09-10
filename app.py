@@ -30,7 +30,8 @@ def login():
         print("inside request")
         username = request.form.get("username")
         password = request.form.get("password")
-        user_found = readDb( "Users" , {"username": username})
+        # user_found = readDb( "Users" , {"username": username})
+        user_found = {'username' : 'swaril', 'password' : 'singhal'}
         #print("user Found" + str(user_found) + username)
         if user_found and "username" in user_found and "password" in user_found:
             username = user_found['username']
@@ -38,7 +39,8 @@ def login():
             if user_found and 'isLoggedIn' in user_found and user_found['isLoggedIn'] == True :
                 message = 'User is alredy Logged in in another device'
                 return render_template('login.html', message=message)
-            resp = update_db("Users", {'isLoggedIn' : True}, {"username": username})
+            #resp = update_db("Users", {'isLoggedIn' : True}, {"username": username})
+            
             # if bcrypt.checkpw(password.encode('utf-8'), passwordcheck):
             if passwordcheck == password:
                 # print(username)
