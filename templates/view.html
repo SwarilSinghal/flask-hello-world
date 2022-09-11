@@ -12,8 +12,10 @@
 <form action="/menu" >
 <!--    <input type="file" accept="image/*" capture="camera">-->
     <label for="InputUsername">Name</label>
-    <input name="email" class="form-control" id="InputUsername"  placeholder={{ Username }} disabled>
+    <input name="email" class="form-control" id="InputUsername"  disabled = "true" value={{ Username }}  >
+    <label for="InputPhoneNumber">Phone Number</label>
+    <input  name="email" class="form-control" id="InputPhoneNumber"  disabled = "true" value = {{ Phone_Number }} >
     <label for="InputBalance">Balance</label>
-    <input  name="email" class="form-control" id="InputBalance"  placeholder= {{ Balance }} disabled>
+    <input  name="email" class="form-control" id="InputBalance" disabled placeholder= {{ Balance }} >
 </form>
 {% endblock %}

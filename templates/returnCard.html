@@ -23,23 +23,19 @@
     <label for="InputBalance">Balance</label>
     <input name="email" class="form-control" id="InputBalance"  value= {{ Balance }} disabled = "true">
     <label for="InputPhoneNumber">Phone Number</label>
-    <input name="email" class="form-control" id="InputPhoneNumber"  value={{ phone_number }} >
+    <input name="email" class="form-control" id="InputPhoneNumber"  value= {{ phone_number }} >
     <label for="amount">Amount</label> <br>
-    <input name="email" class="form-control" type="number" id="amount"  placeholder=  "Enter Amount" disabled = "disabled">
+    <input name="email" class="form-control" type="number" id="amount"  value = {{ amount }} disabled = "disabled">
+    <label for="security_deposit">Security Deposit</label> <br>
+    <input name="email" class="form-control" type="number" id="security_deposit"  value = {{ security }} disabled = "disabled">
+
     
-    <button type = "button" class = 'btn btn-primary' onclick = "this.disabled=true; credit( {{ Balance }}, {{ code }} )" > Credit </button>
+    <button type = "button" class = 'btn btn-primary' onclick = "this.disabled=true; reset( {{ code }} )" > Credit </button>
     <a class = "button btn btn-primary" href = "/scanQRcredit" >Scan QR</a>
     <br> <br>
     <a href = '/lastDebitTransactions' class = "button btn btn-primary">Last 10 Debit Transactions</a> <br>
 </form>
-<script type="text/javascript">
-  $(".radioBtn").click(function() {
-  $("#amount").attr("disabled", true);
-      if ($("input[name=amount]:checked").val() == "Other") {
-          $("#amount").attr("disabled", false);
-      }
-  });
-</script>
+
     <script>
         function credit(balance, code ) {
 
