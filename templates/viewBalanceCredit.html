@@ -11,8 +11,8 @@
 
 <form action="/menu" >
 <!--    <input type="file" accept="image/*" capture="camera">-->
-	<label for="InputTotalDepositedAmount">Total Depoited Money</label>
-    <input name="moneyDeposited" class="form-control" id="InputTotalDepositedAmount"  placeholder={{ MoneyDeposited }} disabled>
+	<!-- <label for="InputTotalDepositedAmount">Total Depoited Money</label>
+    <input name="moneyDeposited" class="form-control" id="InputTotalDepositedAmount"  placeholder={{ MoneyDeposited }} disabled> -->
     <label for="InputUsername">Name</label>
     <input name="email" class="form-control" id="InputUsername"  value={{ Username }} >
     <label for="InputBalance">Balance</label>
@@ -21,9 +21,10 @@
     <input name="email" class="form-control" id="InputPhoneNumber"  value={{ phone_number }} >
     <label for="amount">Amount</label>
     <input name="email" class="form-control" type="number" id="amount"  placeholder=  "Enter Amount" >
-    <button type = "button" class = 'btn btn-primary' onclick = "credit( {{ Balance }}, {{ code }} )" > Credit </button>
+    <button type = "button" class = 'btn btn-primary' onclick = "this.disabled=true; credit( {{ Balance }}, {{ code }} )" > Credit </button>
     <a class = "button btn btn-primary" href = "/scanQRcredit" >Scan QR</a>
     <a class = "button btn btn-primary" href = "/logout" >Log Out</a>
+    <a href = '/lastCreditTransactions' class = "button btn btn-primary">Last 10 Credit Transactions</a> <br>
 </form>
     <script>
         function credit(balance, code ) {

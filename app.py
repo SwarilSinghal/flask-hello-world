@@ -20,7 +20,7 @@ mydb = client["cashManagement"]
 def menu():
 	if "username" in session and session['username'] != None:
 		
-		return render_template('menu.html',logged_in = 'true', type=session['type'])
+		return render_template('menu.html',logged_in = 'true', type=session['type'], MoneyCollected=session['amount'], MoneyDeposited=session['amount_credited'] )
 	return render_template('login.html', message='Please login to your account')
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -63,12 +63,26 @@ def login():
 
 @app.route("/lastTransactions", methods=['POST', 'GET'])
 def lastDebitTransactions():
-    print("TEST")
     if request.method == "GET":
         cursor = readTransactions('debitTransactions', {"user": session['username']})
+        # if('status' in cursor and cursor['status'] == 'error'):
+        #     return cursor
         #print(str(cursor['user']) + str(cursor['cid']))
         # print("TRANSACTION:" + str(cursor))
-        return render_template('lastTransactions.html', transaction=cursor)
+        return render_template('lastTransactions.html', transaction=cursor, title = "Credit Transactions"  )
+        
+        return list(cursor)
+        return render_template('lastTransactions.html', transactions=list(cursor), title = "Credit Transactions")
+
+
+@app.route("/lastCreditTransactions", methods=['POST', 'GET'])
+def lastCreditTransactions():
+    print("TEST")
+    if request.method == "GET":
+        cursor = readTransactions('creditTransactions', {"user": session['username']})
+        #print(str(cursor['user']) + str(cursor['cid']))
+        # print("TRANSACTION:" + str(cursor))
+        return render_template('lastTransactions.html', transaction=cursor, title = "Credit Transactions")
         if(cursor['status'] and cursor['status'] == 'error'):
             return cursor
         return list(cursor)
@@ -84,10 +98,10 @@ def readTransactions(collection, condition):
         #     mongo_uri)
         # db = client.cashManagement
         # print(db)
-        collection = 'creditTransactions'
+        # collection = 'creditTransactions'
         records = mydb[collection]
         # print(records)
-        cursors = records.find(condition).sort('time',pymongo.DESCENDING).limit(10)
+        cursors = records.find(condition, {'amount':1, 'cid': 1, 'user':1, 'txn_id':1, 'time':1}).sort('time',pymongo.DESCENDING).limit(10)
         # print(cursors)
         return cursors
     except:
@@ -239,9 +253,10 @@ def debit():
         # user = readDb('Users', {'username': session['username']})
         user = mydb.Users.find_one({'username': session['username']})
         if(user) :
-            amount_collected = int(session['amount']) + int(json_req['balance'])
+            amount_collected = int(session['amount']) + int(json_req['amount'])
         else:
             return {'status': 'error', 'message': "DB issues, try Again!"}
+        session['amount'] = amount_collected
         # resp = update_db('Users', {'amount': amount_collected}, {'username' : session['username']})
         resp = mydb.Users.update_one({'username' : session['username']},{ '$set' :{'amount': amount_collected} })
         # print(resp)
@@ -269,15 +284,15 @@ def update_db(collection, document, condition):
     return resp
 
 
-# def rand_string(length = 8):
-#     legals = digits + ascii_uppercase
-#     return ''.join( random.choice(legals) for _ in range(length) )
+def rand_string(length = 8):
+    legals = digits + ascii_uppercase
+    return ''.join( random.choice(legals) for _ in range(length) )
 
 
 def generate_debit_receipt(document):
     if("username" in session):
         document['user'] = session['username']
-        # document['txn_id'] = 'CT' + rand_string()
+        document['txn_id'] = 'CT' + rand_string()
         document['time'] = datetime.datetime.now(pytz.timezone('Asia/Kolkata'))
         # mongo_uri = "mongodb://swaril:" + urllib.parse.quote(
         #     "$w@R!1") + "@ac-ymz3eon-shard-00-00.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-01.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-02.iympypo.mongodb.net:27017/?ssl=true&replicaSet=atlas-y20jq1-shard-0&authSource=admin&retryWrites=true&w=majority"
@@ -295,7 +310,7 @@ def generate_debit_receipt(document):
 def generate_credit_receipt(document):
     if("username" in session):
         document['user'] = session['username']
-        # document['txn_id'] = 'CT' + rand_string()
+        document['txn_id'] = 'CT' + rand_string()
         document['time'] = datetime.datetime.now(pytz.timezone('Asia/Kolkata'))
         # mongo_uri = "mongodb://swaril:" + urllib.parse.quote(
         #     "$w@R!1") + "@ac-ymz3eon-shard-00-00.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-01.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-02.iympypo.mongodb.net:27017/?ssl=true&replicaSet=atlas-y20jq1-shard-0&authSource=admin&retryWrites=true&w=majority"
@@ -347,7 +362,7 @@ def credit():
         total_amount = int(cursor['amount_credited']) + int(json_req['amount'])
         # resp = update_db("Users", {'amount_credited' : total_amount}, {"username": str(session['username'])})
 
-        ############ UPDATE CUSTOMERS ########
+        ############ UPDATE USERS ########
         document = { "$set" : {'amount_credited' : total_amount}}
         resp = User_coll.update_one({"username": str(session['username'])} , document)
         ############################
@@ -355,6 +370,7 @@ def credit():
         # document = {'amount': json_req['amount'], 'cid' : json_req['code'] }
        
         # print("CREATE RECEIPT:" + str(receipt))
+        session['amount_credited'] = total_amount
         document = {'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'cid' : json_req['code'], 'status':'success' }
         receipt = generate_credit_receipt(document)
         return {'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'cid' : json_req['code'], 'status':'success' }

@@ -2,6 +2,7 @@
 {% block title %}Login System{% endblock %}
 
 {% block content %}
+<h6>{{ title }} </h6>
 <table id="TransactionTable" align="left" border="1" cellpadding="3" cellspacing="0">
 <tr>
 {% for data in transaction[0] %}
@@ -22,6 +23,7 @@
   </tr>
 {% endfor %}
 </table>
+
 {% endblock %}
 
 <script>

@@ -28,8 +28,8 @@
     <br>
 
     <input name="email" class="form-control" type="number" id="amount"  placeholder=  "Enter Amount" disabled = "disabled">
-    <button type = "submit" class = 'btn btn-primary' > Debit1 </button>
-    <button type = "button" class = 'btn btn-primary' onclick = "credit( {{ Balance }}, {{ code }} )" > Debit </button>
+    <!-- <button type = "submit" class = 'btn btn-primary' > Debit1 </button> -->
+    <button type = "button" class = 'btn btn-primary' onclick = "this.disabled=true;credit( {{ Balance }}, {{ code }} )" > Debit </button>
     <script type="text/javascript">
     $(".radioBtn").click(function() {
     $("#amount").attr("disabled", true);
@@ -78,13 +78,15 @@
             xhr.onload = function() {
             var data = JSON.parse(this.responseText);
             if(data['status'] == 'success') {
-                alert("Debit Successful of Rs." + data['amount']);
+                alert("Debit Successful of Rs." + data['amount'] + '\nCurrent Balance :' + data['balance'] );
                 window.location = '/';
             }
             else {
                 if(data['message']){
                     alert(data['message']);
+                    window.location = '/';
                 }
+                window.location = '/';
             }
         // console.log([data['total_amount_debited']])
             //   if( data['balance'] )
