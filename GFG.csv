@@ -1,0 +1,18 @@
+{'_id': ObjectId('6319f2d81275bf85de87fd10'), 'amount': '1000', 'cid': 1234, 'user': 'sameer', 'txn_id': 'CT3VFSLVO9', 'time': datetime.datetime(2022, 9, 8, 13, 49, 12, 120000)}
+{'_id': ObjectId('6319f4979cfc867478ca48ad'), 'amount': '1000', 'cid': 1234, 'user': 'sameer', 'txn_id': 'CTKXOBSC9N', 'time': datetime.datetime(2022, 9, 8, 13, 56, 39, 63000)}
+{'_id': ObjectId('6319f4e09cfc867478ca48b6'), 'amount': '1000', 'cid': 1234, 'user': 'sameer', 'txn_id': 'CT4H40T7YK', 'time': datetime.datetime(2022, 9, 8, 13, 57, 52, 487000)}
+{'_id': ObjectId('6319f4ef9cfc867478ca48bf'), 'amount': '1000', 'cid': 1234, 'user': 'sameer', 'txn_id': 'CTQ3XPKKH7', 'time': datetime.datetime(2022, 9, 8, 13, 58, 7, 461000)}
+{'_id': ObjectId('6319fd5bddd3ee55b5e5b3cd'), 'amount': '12', 'cid': 1234, 'user': 'sameer', 'txn_id': 'CT160O2C70', 'time': datetime.datetime(2022, 9, 8, 14, 34, 3, 25000)}
+{'_id': ObjectId('6319fef40a1be62c99bd1c3c'), 'amount': '12', 'cid': 1234, 'user': 'sameer', 'txn_id': 'CTS0MPTUX9', 'time': datetime.datetime(2022, 9, 8, 14, 40, 52, 405000)}
+{'_id': ObjectId('631a004f436811654a6836f0'), 'amount': '2323', 'cid': 1234, 'user': 'sameer', 'txn_id': 'CTG4N03QNE', 'time': datetime.datetime(2022, 9, 8, 14, 46, 39, 301000)}
+{'_id': ObjectId('631a0126fce6abcbdd4ffed9'), 'amount': '123', 'cid': 1234, 'user': 'sameer', 'txn_id': 'CT8Y5UBZAH', 'time': datetime.datetime(2022, 9, 8, 14, 50, 14, 476000)}
+{'_id': ObjectId('631a0198fce6abcbdd4ffee7'), 'amount': '100', 'cid': 1234, 'user': 'sameer', 'txn_id': 'CTY82JMF32', 'time': datetime.datetime(2022, 9, 8, 14, 52, 8, 879000)}
+{'_id': ObjectId('631a01b3fce6abcbdd4ffeef'), 'amount': '100', 'cid': 1234, 'user': 'sameer', 'txn_id': 'CTXN2UDDBP', 'time': datetime.datetime(2022, 9, 8, 14, 52, 35, 668000)}
+{'_id': ObjectId('631a040e004bd60b68480ea7'), 'amount': '400', 'cid': 1234, 'user': 'sameer', 'txn_id': 'CTXSG4OO88', 'time': datetime.datetime(2022, 9, 8, 15, 2, 38, 792000)}
+{'_id': ObjectId('631a0436004bd60b68480eb4'), 'amount': '100', 'cid': 1234, 'user': 'sameer', 'txn_id': 'CT0YCTK6SE', 'time': datetime.datetime(2022, 9, 8, 15, 3, 18, 893000)}
+{'_id': ObjectId('631da6c15f4c8aa9fa0fef7e'), 'amount': '12', 'cid': 1234, 'user': 'sameer', 'txn_id': 'CTGFZE18XL', 'time': datetime.datetime(2022, 9, 11, 9, 13, 37, 439000)}
+{'_id': ObjectId('631da76030ab60f530c0145f'), 'amount': '12', 'cid': 1234, 'user': 'sameer', 'txn_id': 'CTSVH8Q74F', 'time': datetime.datetime(2022, 9, 11, 9, 16, 16, 736000)}
+{'_id': ObjectId('631da8896d4bce5bc96300a5'), 'amount': '120', 'cid': 1234, 'user': 'sameer', 'txn_id': 'CTLX9YYIWF', 'time': datetime.datetime(2022, 9, 11, 9, 21, 13, 842000)}
+{'_id': ObjectId('631da8e749c713b684c21782'), 'amount': '120', 'cid': 1234, 'user': 'sameer', 'txn_id': 'CT4WD6OF07', 'time': datetime.datetime(2022, 9, 11, 9, 22, 47, 614000)}
+{'_id': ObjectId('631dbb6b5a9ca91e84eec11f'), 'amount': '123', 'cid': 1234, 'user': 'sameer', 'time': datetime.datetime(2022, 9, 11, 10, 41, 47, 49000)}
+{'_id': ObjectId('631dd7c541a7bdca94f4a5b2'), 'amount': '100', 'cid': 1234, 'user': 'sameer', 'txn_id': 'CT4RETS1P9', 'time': datetime.datetime(2022, 9, 11, 12, 42, 45, 928000)}

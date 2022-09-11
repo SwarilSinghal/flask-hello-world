@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, session, request
+from flask import Flask, redirect, render_template, session, request, Response
 #from flask_session import Session
 import urllib
 import pymongo
@@ -7,6 +7,8 @@ import datetime
 import random
 from string import digits, ascii_uppercase
 import pandas as pd
+
+import numpy as np
 app = Flask(__name__)
 app.secret_key = "testing"
 #app.config["SESSION_PERMANENT"] = False
@@ -375,6 +377,30 @@ def credit():
         receipt = generate_credit_receipt(document)
         return {'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'cid' : json_req['code'], 'status':'success' }
     return {'status': 'error'}
+
+@app.route("/downloadCreditReport")
+def getPlotCSV():
+    # with open("outputs/Adjacency.csv") as fp:
+    #     csv = fp.read()
+    records = mydb['creditTransactions']
+    # print(records)
+    
+    csv = records.find({"user": session['username']}, {'amount':1, 'cid': 1, 'user':1, 'txn_id':1, 'time':1})
+    csv = list(csv)
+    df = pd.DataFrame(csv) 
+    
+# saving the dataframe 
+    df.to_csv('GFG.csv') 
+    np.savetxt("GFG.csv", 
+           csv,
+           delimiter =", ", 
+           fmt ='% s')
+    return redirect("/")
+    # #  Response(
+    #     csv,
+    #     mimetype="text/csv",
+    #     headers={"Content-disposition":
+    #              "attachment; filename=myplot.csv"})
 
 
 

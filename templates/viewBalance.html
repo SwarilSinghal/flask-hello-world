@@ -8,6 +8,10 @@
         <p>{{ message }}</p>
     </div>
 {% endif %}
+<style type="text/css"> 
+    input[type="radio"]{margin-right: 20px;margin-left : 20px; } 
+    input[type = "form"]{margin-left : 10px;}
+  </style>
 
 <form action="{{ url_for('debit') }}" method = "post" >
 
@@ -17,6 +21,7 @@
     <input name="email" class="form-control" id="InputUsername"  placeholder= {{ Username }}  disabled = 'true'>
     <label for="InputBalance">Balance</label>
     <input  name="email" class="form-control" id="InputBalance"  placeholder= {{ Balance }} disabled = 'true'>
+    <label for="Amount">Amount</label><br>
     <input class = "radioBtn" type="radio" id="amount20" name="amount" value="20">
     <label for="amount20">20</label>
     <input class = "radioBtn" type="radio" id="amount50" name="amount" value="50">
@@ -26,8 +31,8 @@
     <input class = "radioBtn" type="radio" id="other" name="amount" value= "Other">
     <label for="other">other</label>
     <br>
-    <br>
     <input name="email" class="form-control" type="number" id="amount"  placeholder=  "Enter Amount" disabled = "disabled">
+    <br>
     <!-- <button type = "submit" class = 'btn btn-primary' > Debit1 </button> -->
     <button type = "button" class = 'btn btn-primary' onclick = "this.disabled=true;credit( {{ Balance }}, {{ code }} )" > Debit </button>
     <script type="text/javascript">
@@ -41,7 +46,7 @@
 
     <a class = "button btn btn-primary" href = "/scanQRdebit" >Scan QR</a>
     <a class = "button btn btn-primary" href = "/" >Menu</a>
-    <br>
+    <br> <br>
     <button type = "button" class = 'btn btn-primary' onclick = "last10Transaction( {{ code }} )" > Last 10 Transaction </button>
 </form>
     <script>
