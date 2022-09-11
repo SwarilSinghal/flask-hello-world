@@ -171,7 +171,7 @@ def scanQRcredit():
     print("HOME session:", session)
     if "username" not in session or ("username" in session and session['username'] == None):
         return render_template("login.html")
-    return render_template('scanQRcredit.html')
+    return render_template('scanQRCredit.html')
 
 
 

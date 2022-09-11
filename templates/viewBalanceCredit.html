@@ -21,9 +21,11 @@
     <input name="email" class="form-control" id="InputPhoneNumber"  value={{ phone_number }} >
     <label for="amount">Amount</label>
     <input name="email" class="form-control" type="number" id="amount"  placeholder=  "Enter Amount" >
+    <br>
     <button type = "button" class = 'btn btn-primary' onclick = "this.disabled=true; credit( {{ Balance }}, {{ code }} )" > Credit </button>
     <a class = "button btn btn-primary" href = "/scanQRcredit" >Scan QR</a>
     <a class = "button btn btn-primary" href = "/logout" >Log Out</a>
+    <br>
     <a href = '/lastCreditTransactions' class = "button btn btn-primary">Last 10 Credit Transactions</a> <br>
 </form>
     <script>

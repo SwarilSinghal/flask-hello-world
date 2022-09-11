@@ -26,7 +26,7 @@
     <input class = "radioBtn" type="radio" id="other" name="amount" value= "Other">
     <label for="other">other</label>
     <br>
-
+    <br>
     <input name="email" class="form-control" type="number" id="amount"  placeholder=  "Enter Amount" disabled = "disabled">
     <!-- <button type = "submit" class = 'btn btn-primary' > Debit1 </button> -->
     <button type = "button" class = 'btn btn-primary' onclick = "this.disabled=true;credit( {{ Balance }}, {{ code }} )" > Debit </button>
@@ -38,8 +38,10 @@
         }
     });
 </script>
+
     <a class = "button btn btn-primary" href = "/scanQRdebit" >Scan QR</a>
     <a class = "button btn btn-primary" href = "/" >Menu</a>
+    <br>
     <button type = "button" class = 'btn btn-primary' onclick = "last10Transaction( {{ code }} )" > Last 10 Transaction </button>
 </form>
     <script>
