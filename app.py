@@ -30,8 +30,8 @@ def login():
         print("inside request")
         username = request.form.get("username")
         password = request.form.get("password")
-        # user_found = readDb( "Users" , {"username": username})
-        user_found = {'username' : 'swaril', 'password' : 'singhal'}
+        user_found = readDb( "Users" , {"username": username})
+        # user_found = {'username' : 'swaril', 'password' : 'singhal'}
         #print("user Found" + str(user_found) + username)
         if user_found and "username" in user_found and "password" in user_found:
             username = user_found['username']
@@ -39,7 +39,7 @@ def login():
             if user_found and 'isLoggedIn' in user_found and user_found['isLoggedIn'] == True :
                 message = 'User is alredy Logged in in another device'
                 return render_template('login.html', message=message)
-            #resp = update_db("Users", {'isLoggedIn' : True}, {"username": username})
+            resp = update_db("Users", {'isLoggedIn' : True}, {"username": username})
             
             # if bcrypt.checkpw(password.encode('utf-8'), passwordcheck):
             if passwordcheck == password:
@@ -169,6 +169,44 @@ def viewBalanceCredit():
         logged_in = "true"
     return render_template("viewBalanceCredit.html", Username=cursor['name'], Balance=cursor['balance'], code=code, logged_in=logged_in, phone_number = cursor['phone_number'], MoneyCollected=session['amount'], MoneyDeposited=session['amount_credited'])
 
+
+
+@app.route("/debit1", methods=["POST", "GET"])
+def debit1():
+    print( "DEBIT 1")
+    if "username" not in session or ("username" in session and session['username'] == None):
+        return render_template("login.html")
+    if hasattr(request, 'method') and request.method == "POST":
+        # json_req = request.get_json()
+        # print(json_req)
+        cursor = readDb('Customers', {"cid": str(request.form['code'])})
+        if cursor is None:
+            return {'status': 'error', 'message' : 'User Not Found'}
+        if 'status' in cursor and cursor['status'] == 'error':
+            return {'status': 'error', 'message' : 'Try Again!'}
+        # print('checking paraments',json_req['code'], json_req['amount'])
+        # isIntegar = isinstance(json_req['amount'], int)
+        # if not isIntegar:
+        #     return {'status' : 'error', 'message': 'Invalid Amount'}
+        # print("Read DB:", cursor)
+        final_balance = int(cursor['balance']) - int(request.form['amount'])
+        if (final_balance < 0):
+            return {'status': 'error', 'message': 'Insufficient Balance'}
+        user = readDb('Users', {'username': session['username']})
+        if(user) :
+            amount_collected = int(session['amount']) + int(request.form['email'])
+        else:
+            return {'status': 'error', 'message': "DB issues, try Again!"}
+        resp = update_db('Users', {'amount': amount_collected}, {'username' : session['username']})
+        # print(resp)
+        document = {'amount': json_req['amount'], 'cid' : json_req['code'] }
+        receipt = generate_debit_receipt(document)
+
+        # print("final Balance:", final_balance)
+        resp = update_db("Customers", {'balance': final_balance}, {'cid' : str(request.form['code'])})
+        # print(resp)
+        return {'status':'success', 'balance':final_balance, 'amount':request.form['amount'] , 'total_amount_debited' : amount_collected}
+    return {'status': 'error', 'message' : 'Try Again'}
 
 
 @app.route("/debit", methods=["POST", "GET"])

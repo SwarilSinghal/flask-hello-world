@@ -9,7 +9,7 @@
     </div>
 {% endif %}
 
-<form action="/menu" >
+<form action="{{ url_for('debit') }}" method = "post" >
 
     <label for="MoneyCollected" display: inline-block;>Money Collected</label>
     <input name="moneyCollected" class="form-control" id="MoneyCollected"  display: inline-block; placeholder={{ MoneyCollected }} disabled>
@@ -28,6 +28,7 @@
     <br>
 
     <input name="email" class="form-control" type="number" id="amount"  placeholder=  "Enter Amount" disabled = "disabled">
+    <button type = "submit" class = 'btn btn-primary' > Debit1 </button>
     <button type = "button" class = 'btn btn-primary' onclick = "credit( {{ Balance }}, {{ code }} )" > Debit </button>
     <script type="text/javascript">
     $(".radioBtn").click(function() {
