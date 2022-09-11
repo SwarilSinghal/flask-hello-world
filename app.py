@@ -119,6 +119,7 @@ def viewBalance():
 def view():
     # print('viewBalance username:', session['username'], session)
     code = request.args.get('code')
+    code = code[-4:]
     # print(code)
     cursor = readDb('Customers', {"cid": code})
     # print(cursor)
