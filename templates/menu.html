@@ -5,12 +5,12 @@
 <center>
     {% if  type == 'superuser' %}
 {% if  logged_in == 'true' %}
-    <label for="InputTotalDepositedAmount">Money Deposited :{{ MoneyDeposited }} </label> <br>
+    <label for="InputTotalDepositedAmount">Money Given By Us :{{ MoneyDeposited }} </label> <br>
     
     <!-- <input name="moneyDeposited" class="form-control" id="InputTotalDepositedAmount"  placeholder={{ MoneyDeposited }} disabled > -->
     {% endif %}
 {% endif %}
-    <label for="MoneyCollected" display: inline-block;>Money Collected : {{ MoneyCollected }}</label>
+    <label for="MoneyCollected" display: inline-block;>Money Received By Us : {{ MoneyCollected }}</label>
     <!-- <input name="moneyCollected" class="form-control" id="MoneyCollected"  display: inline-block; placeholder={{ MoneyCollected }} disabled = 'true'> -->
 <br>
 <a href = '/scanQRdebit' class = "button btn btn-primary">Debit Money</a><br>
@@ -21,9 +21,17 @@
 
 <a href = '/scanQRcredit' class = "button btn btn-primary">Credit Money</a><br>
 <br>
+{% endif %}
+{% endif %}
+<a href = '/lastTransactions' class = "button btn btn-primary">Last 10 Debit Transactions</a> <br> <br>
+<a href = '/downloadDebitReport' class = "button btn btn-primary">Download Debit Transaction Report</a> <br> 
+{% if  type == 'superuser' %}
+{% if  logged_in == 'true' %}
+<br>
 <a href = '/lastCreditTransactions' class = "button btn btn-primary">Last 10 Credit Transactions</a> <br> <br>
+<a href = '/downloadCreditReport' class = "button btn btn-primary">Download Credit Transaction Report</a> <br> <br>
+
 {% endif %}
 {% endif %}
-<a href = '/lastTransactions' class = "button btn btn-primary">Last 10 Debit Transactions</a> <br>
 </center>
 {% endblock %}

@@ -385,22 +385,76 @@ def getPlotCSV():
     records = mydb['creditTransactions']
     # print(records)
     
-    csv = records.find({"user": session['username']}, {'amount':1, 'cid': 1, 'user':1, 'txn_id':1, 'time':1})
-    csv = list(csv)
-    df = pd.DataFrame(csv) 
+    cursor = records.find({"user": session['username']}, {'_id':1,'amount':1, 'cid': 1, 'user':1, 'txn_id':1, 'time':1})
+    # csv = list(csv)
+    # df = pd.DataFrame(csv) 
+    mongo_docs = list(cursor)
+    series_obj = pd.Series({"a key":"a value"})
+    series_obj = pd.Series( {"one":"index"} )
+    series_obj.index = [ "one" ]
+
+    docs = pd.DataFrame(columns=[])
+    for num, doc in enumerate( mongo_docs ):
+        doc["_id"] = str(doc["_id"])
+        doc_id = doc["_id"]
+        series_obj = pd.Series( doc, name=doc_id )
+        docs = docs.append( series_obj )
+    csv_export = docs.to_csv(sep=",") 
+     # CSV delimited by commas
+    # print ("\nCSV data:", csv_export) 
+    # df.to_csv('GFG.csv') 
+    # np.savetxt("GFG.csv", 
+    #        csv,
+    #        delimiter =", ", 
+    #        fmt ='% s')
+
+    # return redirect("/")
+    fname = str(session['username'])
+    return Response(
+        csv_export,
+        mimetype="text/json",
+        headers={"Content-disposition":
+                 "attachment; filename=" + fname + "creditTransactions.csv"})
+
+
+
+@app.route("/downloadDebitReport")
+def downloadDebitReport():
+    # with open("outputs/Adjacency.csv") as fp:
+    #     csv = fp.read()
+    records = mydb['debitTransactions']
+    # print(records)
     
-# saving the dataframe 
-    df.to_csv('GFG.csv') 
-    np.savetxt("GFG.csv", 
-           csv,
-           delimiter =", ", 
-           fmt ='% s')
-    return redirect("/")
-    # #  Response(
-    #     csv,
-    #     mimetype="text/csv",
-    #     headers={"Content-disposition":
-    #              "attachment; filename=myplot.csv"})
+    cursor = records.find({"user": session['username']}, {'_id':1,'amount':1, 'cid': 1, 'user':1, 'txn_id':1, 'time':1})
+    # csv = list(csv)
+    # df = pd.DataFrame(csv) 
+    mongo_docs = list(cursor)
+    series_obj = pd.Series({"a key":"a value"})
+    series_obj = pd.Series( {"one":"index"} )
+    series_obj.index = [ "one" ]
+
+    docs = pd.DataFrame(columns=[])
+    for num, doc in enumerate( mongo_docs ):
+        doc["_id"] = str(doc["_id"])
+        doc_id = doc["_id"]
+        series_obj = pd.Series( doc, name=doc_id )
+        docs = docs.append( series_obj )
+    csv_export = docs.to_csv(sep=",") 
+     # CSV delimited by commas
+    # print ("\nCSV data:", csv_export) 
+    # df.to_csv('GFG.csv') 
+    # np.savetxt("GFG.csv", 
+    #        csv,
+    #        delimiter =", ", 
+    #        fmt ='% s')
+
+    # return redirect("/")
+    fname = str(session['username'])
+    return Response(
+        csv_export,
+        mimetype="text/json",
+        headers={"Content-disposition":
+                 "attachment; filename=" + fname + "debitTransactions.csv"})
 
 
 

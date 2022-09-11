@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Login System{% endblock %}
+
+{% block content %}
+
+{% if message  %}
+    <div class="alert alert-secondary" role="alert">
+        <p>{{ message }}</p>
+    </div>
+{% endif %}
+
+<style type="text/css"> 
+  input[type="radio"]{margin-right: 20px;margin-left : 20px; } 
+  input[type = "form"]{margin-left : 10px;}
+</style>
+
+<form action="/menu" >
+<!--    <input type="file" accept="image/*" capture="camera">-->
+	<!-- <label for="InputTotalDepositedAmount">Total Depoited Money</label>
+    <input name="moneyDeposited" class="form-control" id="InputTotalDepositedAmount"  placeholder={{ MoneyDeposited }} disabled> -->
+    <label for="InputUsername">Name</label>
+    <input name="email" class="form-control" id="InputUsername"  value={{ Username }} disabled="true">
+    <label for="InputBalance">Balance</label>
+    <input name="email" class="form-control" id="InputBalance"  value= {{ Balance }} disabled = "true">
+    <label for="InputPhoneNumber">Phone Number</label>
+    <input name="email" class="form-control" id="InputPhoneNumber"  value={{ phone_number }} >
+    <label for="amount">Amount</label> <br>
+    <input name="email" class="form-control" type="number" id="amount"  placeholder=  "Enter Amount" disabled = "disabled">
+    
+    <button type = "button" class = 'btn btn-primary' onclick = "this.disabled=true; credit( {{ Balance }}, {{ code }} )" > Credit </button>
+    <a class = "button btn btn-primary" href = "/scanQRcredit" >Scan QR</a>
+    <br> <br>
+    <a href = '/lastDebitTransactions' class = "button btn btn-primary">Last 10 Debit Transactions</a> <br>
+</form>
+<script type="text/javascript">
+  $(".radioBtn").click(function() {
+  $("#amount").attr("disabled", true);
+      if ($("input[name=amount]:checked").val() == "Other") {
+          $("#amount").attr("disabled", false);
+      }
+  });
+</script>
+    <script>
+        function credit(balance, code ) {
+
+          var amount_list = document.getElementsByName('amount');
+            amount =0;
+            for(i = 0; i<amount_list.length; i++) {
+                if(amount_list[i].checked) {
+                    if(amount_list[i].value == 'Other'){
+                        amount = parseInt(document.getElementById('amount').value);
+                        break;
+                    } else {
+                        amount = parseInt(amount_list[i].value);
+                        break;
+                    }
+                }
+            }
+            if( amount <= 0) {
+                alert("Enter valid Amount");
+                return;
+            }
+        name = document.getElementById('InputUsername').value;
+        phone_number = document.getElementById('InputPhoneNumber').value;
+	      console.log(amount, name, phone_number, balance, code);
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/credit", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({
+            amount: amount,
+            code: code,
+            balance: balance,
+            name: name,
+            phone_number: phone_number
+        }));
+        xhr.onload = function() {
+          // console.log("HELLO")
+          // console.log(this.responseText);
+          var data = JSON.parse(this.responseText);
+          // console.log(data);
+          alert('Credit Successful \n Amount: ' + amount + '\nCurrent Balance :' + data['balance'] );
+          window.location = '/';
+      }
+}
+    </script>
+{% endblock %}
