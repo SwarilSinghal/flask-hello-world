@@ -30,7 +30,7 @@
         amount = document.getElementById('amount').value;
         name = document.getElementById('InputUsername').value;
         phone_number = document.getElementById('InputPhoneNumber').value;
-	console.log(amount, name, phone_number, balance, code);
+	      console.log(amount, name, phone_number, balance, code);
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/credit", true);
         xhr.setRequestHeader('Content-Type', 'application/json');
@@ -46,16 +46,9 @@
           // console.log(this.responseText);
           var data = JSON.parse(this.responseText);
           // console.log(data);
-          alert('Credit Successful');
-          if( data['balance'] )
-            document.getElementById('InputBalance').value = data['balance'];
-          if( data['name'] )
-            document.getElementById('InputUserName').value = data['name'];
-          if( data['phone_number'] )
-            document.getElementById('InputPhoneNumber').value = data['phone_number'];
-    	  if(data['amount_credited'])
-		document.getElementById('InputTotalDepositedAmount').value = data['amount_credited'];
-	}
+          alert('Credit Successful \n Amount: ' + amount + '\nCurrent Balance :' + data['balance'] );
+          window.location = '/';
+      }
 }
     </script>
 {% endblock %}

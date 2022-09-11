@@ -2,23 +2,19 @@
 {% block title %}Login System{% endblock %}
 
 {% block content %}
-      <script src="https://unpkg.com/html5-qrcode"></script>
-        <h3>Swaril </h3>
-        <div id="qr-reader" style="width: 600px"></div>
-        <device type="media" onchange="update(this.data)"></device>
-<video autoplay></video>
-
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <div id="qr-reader" style="width: 600px"></div>
+  <device type="media" onchange="update(this.data)"></device>
+  <video autoplay></video>
   <script>
-    function stopScan() {
-    }
     function onScanSuccess(decodedText, decodedResult) {
-    //  console.log(`Code scanned = ${decodedText}`, decodedResult);
-     let s = "/viewBalance/".decodedResult
-	decodedText = decodedText.slice(-1,4);
-     window.location = '/viewBalanceCredit?code='+decodedText;
+      //  console.log(`Code scanned = ${decodedText}`, decodedResult);
+      html5QrcodeScanner.clear();
+      decodedText = decodedText.slice(-4);
+      window.location = '/viewBalanceCredit?code='+decodedText;
     }
     var html5QrcodeScanner = new Html5QrcodeScanner(
-    "qr-reader", { fps: 10, qrbox: 150, disableFlip: true });
+    "qr-reader", { fps: 5, qrbox: 350, disableFlip: true });
     html5QrcodeScanner.render(onScanSuccess);
 
   </script>
