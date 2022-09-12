@@ -36,6 +36,15 @@
     <br>
     <input name="email" class="form-control" type="number" id="amount"  placeholder=  "Enter Amount" disabled = "disabled">
     <br>
+    {% if  type == 'superuser' %}
+    {% if  logged_in == 'true' %}
+        <div>
+          <input type="checkbox" id="security_deposit" name="security" value="50">
+          <label for="cooking">Add Rs.50 as Security Deposit </label>
+        </div>
+    {% endif %}
+    {% endif %}
+    
     <button type = "button" class = 'btn btn-primary' onclick = "this.disabled=true; credit( {{ Balance }}, {{ code }} )" > Credit </button>
     <a class = "button btn btn-primary" href = "/scanQRcredit" >Scan QR</a>
     <a class = "button btn btn-primary" href = "/logout" >Log Out</a>
@@ -52,7 +61,13 @@
 </script>
     <script>
         function credit(balance, code ) {
-
+          const security_box = document.querySelector('#security_deposit');
+          var security = false;
+          var security_deposit = 0;
+          if (security_box.checked) {
+            security = true;
+            security_deposit = 50;
+          }
           var amount_list = document.getElementsByName('amount');
             amount =0;
             for(i = 0; i<amount_list.length; i++) {
@@ -81,14 +96,18 @@
             code: code,
             balance: balance,
             name: name,
-            phone_number: phone_number
+            phone_number: phone_number,
+            security_deposit : security_deposit
         }));
         xhr.onload = function() {
           // console.log("HELLO")
           // console.log(this.responseText);
           var data = JSON.parse(this.responseText);
           // console.log(data);
-          alert('Credit Successful \n Amount: ' + amount + '\nCurrent Balance :' + data['balance'] );
+          if(security == false)
+          alert('Credit Successful \n Amount: Rs.' + amount + '\nCurrent Balance : Rs.' + data['balance'] );
+          else
+          alert('Credit Successful \n Amount: Rs.' + amount + '\nCurrent Balance :Rs.' + data['balance'] + '\nSecurity Deposit : Rs.50' );
           window.location = '/';
       }
 }

@@ -52,7 +52,9 @@ def login():
                 session["username"] = username
                 session['type'] = user_found['type']
                 session['amount'] = user_found['amount']
-                session['amount_credited'] = user_found['amount_credited']
+                if(user_found['type'] == 'superuser') :
+                    session['amount_credited'] = user_found['amount_credited']
+                    session['security_amount'] = user_found['security_amount']
                 return redirect('/')
             else:
                 message = 'Wrong password'
@@ -108,6 +110,26 @@ def readTransactions(collection, condition):
         return cursors
     except:
         return {'status':'error'}
+
+
+@app.route("/returnCard", methods=["POST", "GET"])
+def returnCard():
+    # print('viewBalance username:', session['username'], session)
+    if "username" not in session or ("username" in session and session['username'] == None):
+        return render_template("login.html")
+
+    code = int(request.args.get('code'))
+    if code is None:
+        return {'status': 'error', 'message': "Can't find the User"}   
+    try:
+        cursor = readDb('Customers', {"cid": code})
+    except:
+        return {'status':'error', 'message': 'DB read Failed!'}
+    # print(cursor)
+    # print("END viewBalance")
+    logged_in = "true"
+    sum = int(cursor['balance']) + int(cursor['security'])
+    return render_template("returnCard.html", Username=cursor['name'], Balance=cursor['balance'], code=code, security = cursor['security'] ,phone_number = cursor['phone_number'], amount = sum)
 
 
 
@@ -193,14 +215,11 @@ def viewBalanceCredit():
 
 
 
-@app.route("/debit1", methods=["POST", "GET"])
-def debit1():
-    print( "DEBIT 1")
+@app.route("/reset", methods=["POST", "GET"])
+def reset():
     if "username" not in session or ("username" in session and session['username'] == None):
         return render_template("login.html")
     if hasattr(request, 'method') and request.method == "POST":
-        # json_req = request.get_json()
-        # print(json_req)
         cursor = readDb('Customers', {"cid": int(request.form['code'])})
         if cursor is None:
             return {'status': 'error', 'message' : 'User Not Found'}
@@ -211,23 +230,23 @@ def debit1():
         # if not isIntegar:
         #     return {'status' : 'error', 'message': 'Invalid Amount'}
         # print("Read DB:", cursor)
-        final_balance = int(cursor['balance']) - int(request.form['amount'])
-        if (final_balance < 0):
-            return {'status': 'error', 'message': 'Insufficient Balance'}
         user = readDb('Users', {'username': session['username']})
         if(user) :
-            amount_collected = int(session['amount']) + int(request.form['email'])
+            amount_collected = int(session['amount']) + int(cursor['balance'])
         else:
             return {'status': 'error', 'message': "DB issues, try Again!"}
-        resp = update_db('Users', {'amount': amount_collected}, {'username' : session['username']})
+        security_collected = cursor['security'] + session['security_amount']
+        session['security_amount'] = security_collected
+        session['amount'] = amount_collected
+        resp = update_db('Users', {'amount': amount_collected, 'security' : security_collected}, {'username' : session['username']})
         # print(resp)
         document = {'amount': json_req['amount'], 'cid' : int(json_req['code']) }
         receipt = generate_debit_receipt(document)
 
         # print("final Balance:", final_balance)
-        resp = update_db("Customers", {'balance': final_balance}, {'cid' : int(request.form['code'])})
+        resp = update_db("Customers", {'balance': 0,'name':'', 'security':0, 'phone_number':''}, {'cid' : int(request.form['code'])})
         # print(resp)
-        return {'status':'success', 'balance':final_balance, 'amount':request.form['amount'] , 'total_amount_debited' : amount_collected}
+        return {'status':'success', 'balance':cursor['balance'], 'security':cursor['security'] , 'total_sum' : cursor['balance'] + cursor['security']}
     return {'status': 'error', 'message' : 'Try Again'}
 
 
@@ -351,7 +370,10 @@ def credit():
         # print("final Balance:", final_balance)
         # resp = update_db("Customers", document, {'cid' : str(json_req['code'])})
         ############ UPDATE CUSTOMERS ########
-        document = { "$set" : {'balance': final_balance, 'name': json_req['name'], 'phone_number': json_req['phone_number']}}
+        if security == True:
+            document = { "$set" : {'balance': final_balance, 'name': json_req['name'], 'phone_number': json_req['phone_number'], 'security' : int(json_req['security_deposit'])}}
+        else :
+            document = { "$set" : {'balance': final_balance, 'name': json_req['name'], 'phone_number': json_req['phone_number']}}
         resp = Cust_coll.update_one({'cid' : int(json_req['code'])} , document)
         ############################
         # print("UPDATE CUSTOMERS DB:" + str(resp))
@@ -365,7 +387,11 @@ def credit():
         # resp = update_db("Users", {'amount_credited' : total_amount}, {"username": str(session['username'])})
 
         ############ UPDATE USERS ########
-        document = { "$set" : {'amount_credited' : total_amount}}
+        if security == True:
+            session['security_amount'] = int(session['security_amount']) + int(json_req['security_deposit'])
+            document = { "$set" : {'amount_credited' : total_amount, 'security_amount' : session['security_amount']}}
+        else :
+            document = { "$set" : {'amount_credited' : total_amount}}
         resp = User_coll.update_one({"username": str(session['username'])} , document)
         ############################
         # print("UPDATE USERS DB:" + str(resp))
@@ -373,7 +399,10 @@ def credit():
        
         # print("CREATE RECEIPT:" + str(receipt))
         session['amount_credited'] = total_amount
-        document = {'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'cid' : int(json_req['code']), 'status':'success' }
+        if security == True:
+            document = {'cid' : int(json_req['code']), 'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'security_deposit': int(json_req['security_deposit']), 'status':'success' }
+        else:
+                        document = {'cid' : int(json_req['code']), 'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount,  'status':'success' }
         receipt = generate_credit_receipt(document)
         return {'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'cid' : int(json_req['code']), 'status':'success' }
     return {'status': 'error'}
