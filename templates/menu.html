@@ -6,12 +6,12 @@
     {% if  type == 'superuser' %}
 {% if  logged_in == 'true' %}
     <label for="InputTotalDepositedAmount">Money Given By Us :{{ MoneyDeposited }} </label> <br>
-    
+    <label for="InputTotalDepositedAmount">Total Security Received :{{ SecurityAmount }} </label> <br>
     <!-- <input name="moneyDeposited" class="form-control" id="InputTotalDepositedAmount"  placeholder={{ MoneyDeposited }} disabled > -->
     {% endif %}
 {% endif %}
     <label for="MoneyCollected" display: inline-block;>Money Received By Us : {{ MoneyCollected }}</label> <br>
-    <label for="InputTotalDepositedAmount">Total Security Received :{{ SecurityAmount }} </label> <br>
+
     <!-- <input name="moneyCollected" class="form-control" id="MoneyCollected"  display: inline-block; placeholder={{ MoneyCollected }} disabled = 'true'> -->
 <br>
 
@@ -25,7 +25,7 @@
 
 {% else %}
 <a href = '/scanQRdebit' class = "button btn btn-primary">Debit Money</a><br> <br>
-<
+
 {% endif %}
 {% endif %}
 <a href = '/lastTransactions' class = "button btn btn-primary">Last 10 Debit Transactions</a> <br> <br>

@@ -21,6 +21,7 @@
 <!--  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">-->
 <!--    <div class="navbar-nav">-->
   {% if  logged_in == 'true' %}
+      <label class = "right">User Id: {{ username }}</label>
       <a class="button right" href="/logout">Logout</a>
   {% endif %}
     </div>

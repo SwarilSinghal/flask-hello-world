@@ -19,21 +19,21 @@
 	<!-- <label for="InputTotalDepositedAmount">Total Depoited Money</label>
     <input name="moneyDeposited" class="form-control" id="InputTotalDepositedAmount"  placeholder={{ MoneyDeposited }} disabled> -->
     <label for="InputUsername">Name</label>
-    <input name="email" class="form-control" id="InputUsername"  value={{ Username }} disabled="true">
+    <input name="email" class="form-control" id="InputUsername" disabled="true" value={{ Username }} >
     <label for="InputBalance">Balance</label>
-    <input name="email" class="form-control" id="InputBalance"  value= {{ Balance }} disabled = "true">
+    <input name="email" class="form-control" id="InputBalance"  disabled = "true"  value= {{ Balance }}>
     <label for="InputPhoneNumber">Phone Number</label>
     <input name="email" class="form-control" id="InputPhoneNumber"  value= {{ phone_number }} >
     <label for="security_deposit">Security Deposit</label> <br>
-    <input name="email" class="form-control" type="number" id="security_deposit"  value = {{ security }} disabled = "disabled">
+    <input name="email" class="form-control" type="number" id="security_deposit" disabled = "disabled" value = {{ security }} >
     <label for="amount"> Total Sum</label> <br>
-    <input name="email" class="form-control" type="number" id="amount"  value = {{ amount }} disabled = "disabled">
+    <input name="email" class="form-control" type="number" id="amount" disabled = "disabled" value = {{ amount }} >
     
     <button type = "button" class = 'btn btn-primary' onclick = "finalDebit( {{ code }} )" > Reset Card </button>
     <a class = "button btn btn-primary" href = "/scanQRcredit" >Scan QR</a>
     <a class = "button btn btn-primary" href = "/" >Menu</a>
     <br> <br>
-    <a href = '/lastDebitTransactions' class = "button btn btn-primary">Last 10 Debit Transactions</a> <br>
+    <a href = '/lastReturnTransactions' class = "button btn btn-primary">Last 10 Return Transactions</a> <br>
 
     <script>
         function finalDebit( code ) {

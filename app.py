@@ -20,10 +20,12 @@ mydb = client["cashManagement"]
 
 @app.route('/')
 def menu():
-	if "username" in session and session['username'] != None:
-		
-		return render_template('menu.html',logged_in = 'true', type=session['type'], MoneyCollected=session['amount'], MoneyDeposited=session['amount_credited'], SecurityAmount = session['security_amount'] )
-	return render_template('login.html', message='Please login to your account')
+    if "username" in session and session['username'] != None:
+        if session['type'] == 'superuser' :
+            return render_template('menu.html',logged_in = 'true', type=session['type'], MoneyCollected=session['amount'], MoneyDeposited=session['amount_credited'], SecurityAmount = session['security_amount'], username = session['username'])
+        else:
+            return render_template('menu.html',logged_in = 'true', type=session['type'], MoneyCollected=session['amount'], username = session['username'] )
+    return render_template('login.html', message='Please login to your account')
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -32,9 +34,9 @@ def login():
         return redirect('/')
     # return render_template('login.html', message=message)
     if hasattr(request, 'method') and request.method == "POST":
-        print("inside request")
         username = request.form.get("username")
         password = request.form.get("password")
+        print("Login by username:" + username + ' password :' + password)
         user_found = readDb( "Users" , {"username": username})
         # user_found = {'username' : 'swaril', 'password' : 'singhal'}
         #print("user Found" + str(user_found) + username)
@@ -60,7 +62,7 @@ def login():
                 message = 'Wrong password'
                 return render_template('login.html', message=message)
         else:
-            message = 'Email not found'
+            message = 'User not found'
             return render_template('login.html', message=message)
     return render_template('login.html', message=message)
 
@@ -74,8 +76,23 @@ def lastDebitTransactions():
         # if('status' in cursor and cursor['status'] == 'error'):
         #     return cursor
         #print(str(cursor['user']) + str(cursor['cid']))
+        print("TRANSACTION:" + str(cursor))
+        return render_template('lastTransactions.html', transaction=cursor, title = "Debit Transactions" , logged_in = 'true', username = session['username']  )
+        
+        return list(cursor)
+        return render_template('lastTransactions.html', transactions=list(cursor), title = "Debit Transactions")
+
+@app.route("/lastReturnTransactions", methods=['POST', 'GET'])
+def lastReturnTransactions():
+    if "username" not in session or ("username" in session and session['username'] == None):
+        return render_template("login.html")
+    if request.method == "GET":
+        cursor = readTransactions('debitTransactions', {"user": session['username'], 'security' : 50})
+        # if('status' in cursor and cursor['status'] == 'error'):
+        #     return cursor
+        #print(str(cursor['user']) + str(cursor['cid']))
         # print("TRANSACTION:" + str(cursor))
-        return render_template('lastTransactions.html', transaction=cursor, title = "Credit Transactions" , logged_in = 'true' )
+        return render_template('lastTransactions.html', transaction=cursor, title = "Return Transactions" , logged_in = 'true', username = session['username']  )
         
         return list(cursor)
         return render_template('lastTransactions.html', transactions=list(cursor), title = "Credit Transactions")
@@ -85,32 +102,26 @@ def lastDebitTransactions():
 def lastCreditTransactions():
     print("TEST")
     if request.method == "GET":
+        print("lastCreditTransactions:" + session['username'])
         cursor = readTransactions('creditTransactions', {"user": session['username']})
         #print(str(cursor['user']) + str(cursor['cid']))
-        # print("TRANSACTION:" + str(cursor))
-        return render_template('lastTransactions.html', transaction=cursor, title = "Debit Transactions")
+        print("TRANSACTION:" + str(cursor))
+        return render_template('lastTransactions.html', transaction=cursor, title = "Credit Transactions", logged_in = "true", username = session['username'] )
         if(cursor['status'] and cursor['status'] == 'error'):
             return cursor
-        return list(cursor)
-        return render_template('lastTransactions.html', transactions=list(cursor) )
 
 
 
 def readTransactions(collection, condition):
     try:
-        # mongo_uri = "mongodb://swaril:" + urllib.parse.quote(
-        # "$w@R!1") + "@ac-ymz3eon-shard-00-00.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-01.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-02.iympypo.mongodb.net:27017/?ssl=true&replicaSet=atlas-y20jq1-shard-0&authSource=admin&retryWrites=true&w=majority"
-        # client = pymongo.MongoClient(
-        #     mongo_uri)
-        # db = client.cashManagement
-        # print(db)
-        # collection = 'creditTransactions'
+        
         records = mydb[collection]
-        # print(records)
-        cursors = records.find(condition, {'amount':1, 'cid': 1, 'user':1, 'txn_id':1, 'time':1}).sort('time',pymongo.DESCENDING).limit(10)
-        # print(cursors)
+        cursors = records.find(condition, {'amount':1, 'cid': 1, 'user':1, 'txn_id':1, 'time':1, 'security' : 1 }).sort('time',pymongo.DESCENDING).limit(10)
+        # cursors = records.find_one(condition)
+        print("Read Transactions: " + str(cursors))
         return cursors
-    except:
+    except pymongo.errors.OperationFailure:
+        print("exceprion:" + e)
         return {'status':'error'}
 
 
@@ -131,7 +142,7 @@ def returnCard():
     # print("END viewBalance")
     
     sum = int(cursor['balance']) + int(cursor['security'])
-    return render_template("returnCard.html", Username=cursor['name'], Balance=cursor['balance'], code=code, security = cursor['security'] ,phone_number = cursor['phone_number'], amount = sum, logged_in = "true")
+    return render_template("returnCard.html", Username=cursor['name'], Balance=cursor['balance'], code=code, security = cursor['security'] ,phone_number = cursor['phone_number'], amount = sum, logged_in = "true", username = session['username'] )
 
 
 
@@ -143,7 +154,7 @@ def viewBalance():
 
     code = int(request.args.get('code'))
     if code is None:
-        return render_template("viewBalance.html", Username='', Balance='', code=code, MoneyCollected=session['amount'])   
+        return render_template("viewBalance.html", Username='', Balance='', code=code, MoneyCollected=session['amount'], username = session['username'] )   
     # print(code)
     try:
         cursor = readDb('Customers', {"cid": code})
@@ -152,7 +163,7 @@ def viewBalance():
     # print(cursor)
     # print("END viewBalance")
     logged_in = "true"
-    return render_template("viewBalance.html", Username=cursor['name'], Balance=cursor['balance'], logged_in=logged_in, code=code, MoneyCollected=session['amount'])
+    return render_template("viewBalance.html", Username=cursor['name'], Balance=cursor['balance'], logged_in=logged_in, code=code, MoneyCollected=session['amount'], username = session['username'] )
 
 
 @app.route("/view", methods=["POST", "GET"])
@@ -189,7 +200,7 @@ def scanQRdebit():
     print("HOME session:", session)
     if "username" not in session or ("username" in session and session['username'] == None):
         return render_template("login.html")
-    return render_template('scanQRDebit.html',  logged_in="true")
+    return render_template('scanQRDebit.html',  logged_in="true", username = session['username'] )
 
 
 @app.route("/scanQRcredit")
@@ -197,7 +208,7 @@ def scanQRcredit():
     print("HOME session:", session)
     if "username" not in session or ("username" in session and session['username'] == None):
         return render_template("login.html")
-    return render_template('scanQRCredit.html', logged_in="true")
+    return render_template('scanQRCredit.html', logged_in="true", username = session['username'] )
 
 
 @app.route("/scanQRreturnCard")
@@ -205,7 +216,7 @@ def scanQRreturnCard():
     print("HOME session:", session)
     if "username" not in session or ("username" in session and session['username'] == None):
         return render_template("login.html")
-    return render_template('scanQRreturnCard.html', logged_in="true")
+    return render_template('scanQRreturnCard.html', logged_in="true", username = session['username'] )
 
 @app.route("/viewBalanceCredit", methods=["POST", "GET"])
 def viewBalanceCredit():
@@ -219,7 +230,7 @@ def viewBalanceCredit():
         return {'status':'error', 'message': 'DB read Failed!'}
     if "username" in session and session['username'] != None:
         logged_in = "true"
-    return render_template("viewBalanceCredit.html", Username=cursor['name'], Balance=cursor['balance'], code=code, logged_in=logged_in, phone_number = cursor['phone_number'], MoneyCollected=session['amount'], MoneyDeposited=session['amount_credited'], type = session['type'])
+    return render_template("viewBalanceCredit.html", Username=cursor['name'], Balance=cursor['balance'], code=code, logged_in=logged_in, phone_number = cursor['phone_number'], MoneyCollected=session['amount'], MoneyDeposited=session['amount_credited'], type = session['type'], username = session['username'] )
 
 
 
@@ -344,6 +355,7 @@ def generate_credit_receipt(document):
         document['user'] = session['username']
         document['txn_id'] = 'CT' + rand_string()
         document['time'] = datetime.datetime.now(pytz.timezone('Asia/Kolkata'))
+        print(document['time'])
         # mongo_uri = "mongodb://swaril:" + urllib.parse.quote(
         #     "$w@R!1") + "@ac-ymz3eon-shard-00-00.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-01.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-02.iympypo.mongodb.net:27017/?ssl=true&replicaSet=atlas-y20jq1-shard-0&authSource=admin&retryWrites=true&w=majority"
         # client = pymongo.MongoClient(
@@ -412,7 +424,7 @@ def credit():
         # print("CREATE RECEIPT:" + str(receipt))
         session['amount_credited'] = total_amount
         if security == True:
-            document = {'cid' : int(json_req['code']), 'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'security_deposit': int(json_req['security_deposit']), 'status':'success' }
+            document = {'cid' : int(json_req['code']), 'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'security': int(json_req['security_deposit']), 'status':'success' }
         else:
                         document = {'cid' : int(json_req['code']), 'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount,  'status':'success' }
         receipt = generate_credit_receipt(document)
@@ -420,7 +432,7 @@ def credit():
     return {'status': 'error'}
 
 @app.route("/downloadCreditReport")
-def getPlotCSV():
+def downloadCreditReport():
     # with open("outputs/Adjacency.csv") as fp:
     #     csv = fp.read()
     records = mydb['creditTransactions']
