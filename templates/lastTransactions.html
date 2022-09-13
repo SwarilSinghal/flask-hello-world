@@ -4,6 +4,7 @@
 {% block content %}
 <h6>{{ title }} </h6>
 <table id="TransactionTable" align="left" border="1" cellpadding="3" cellspacing="0">
+  <caption><a class = "button btn btn-primary" href = "/" >Menu</a></caption>
 <tr>
 {% for data in transaction[0] %}
   
@@ -23,7 +24,7 @@
   </tr>
 {% endfor %}
 </table>
-<center><a class = "button btn btn-primary" href = "/" >Menu</a></center>
+
 {% endblock %}
 
 <script>

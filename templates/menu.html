@@ -14,14 +14,18 @@
     <label for="InputTotalDepositedAmount">Total Security Received :{{ SecurityAmount }} </label> <br>
     <!-- <input name="moneyCollected" class="form-control" id="MoneyCollected"  display: inline-block; placeholder={{ MoneyCollected }} disabled = 'true'> -->
 <br>
-<a href = '/scanQRdebit' class = "button btn btn-primary">Debit Money</a><br>
-<br>
-{% if  type == 'superuser' %}
+
 {% if  logged_in == 'true' %}
-
-
+{% if  type == 'superuser' %}
 <a href = '/scanQRcredit' class = "button btn btn-primary">Credit Money</a><br>
 <br>
+<a href = '/scanQRreturnCard' class = "button btn btn-primary">Return Card</a><br>
+<br>
+
+
+{% else %}
+<a href = '/scanQRdebit' class = "button btn btn-primary">Debit Money</a><br> <br>
+<
 {% endif %}
 {% endif %}
 <a href = '/lastTransactions' class = "button btn btn-primary">Last 10 Debit Transactions</a> <br> <br>

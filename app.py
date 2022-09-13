@@ -129,9 +129,9 @@ def returnCard():
         return {'status':'error', 'message': 'DB read Failed!'}
     # print(cursor)
     # print("END viewBalance")
-    logged_in = "true"
+    
     sum = int(cursor['balance']) + int(cursor['security'])
-    return render_template("returnCard.html", Username=cursor['name'], Balance=cursor['balance'], code=code, security = cursor['security'] ,phone_number = cursor['phone_number'], amount = sum)
+    return render_template("returnCard.html", Username=cursor['name'], Balance=cursor['balance'], code=code, security = cursor['security'] ,phone_number = cursor['phone_number'], amount = sum, logged_in = "true")
 
 
 
@@ -200,6 +200,12 @@ def scanQRcredit():
     return render_template('scanQRCredit.html', logged_in="true")
 
 
+@app.route("/scanQRreturnCard")
+def scanQRreturnCard():
+    print("HOME session:", session)
+    if "username" not in session or ("username" in session and session['username'] == None):
+        return render_template("login.html")
+    return render_template('scanQRreturnCard.html', logged_in="true")
 
 @app.route("/viewBalanceCredit", methods=["POST", "GET"])
 def viewBalanceCredit():
@@ -219,10 +225,13 @@ def viewBalanceCredit():
 
 @app.route("/reset", methods=["POST", "GET"])
 def reset():
+    print("RESET")
     if "username" not in session or ("username" in session and session['username'] == None):
         return render_template("login.html")
     if hasattr(request, 'method') and request.method == "POST":
-        cursor = readDb('Customers', {"cid": int(request.form['code'])})
+        json_req = request.get_json()
+        code  = json_req['code']
+        cursor = readDb('Customers', {"cid": int(code)})
         if cursor is None:
             return {'status': 'error', 'message' : 'User Not Found'}
         if 'status' in cursor and cursor['status'] == 'error':
@@ -231,22 +240,22 @@ def reset():
         # isIntegar = isinstance(json_req['amount'], int)
         # if not isIntegar:
         #     return {'status' : 'error', 'message': 'Invalid Amount'}
-        # print("Read DB:", cursor)
+        print("Read DB:", cursor)
         user = readDb('Users', {'username': session['username']})
         if(user) :
             amount_collected = int(session['amount']) + int(cursor['balance'])
         else:
             return {'status': 'error', 'message': "DB issues, try Again!"}
-        security_collected = cursor['security'] + session['security_amount']
+        security_collected =  session['security_amount'] - cursor['security']
         session['security_amount'] = security_collected
         session['amount'] = amount_collected
         resp = update_db('Users', {'amount': amount_collected, 'security' : security_collected}, {'username' : session['username']})
-        # print(resp)
-        document = {'amount': json_req['amount'], 'cid' : int(json_req['code']) }
+        print(resp)
+        document = {'amount': cursor['balance'], 'cid' : int(json_req['code']) , 'security' : cursor['security'] }
         receipt = generate_debit_receipt(document)
 
         # print("final Balance:", final_balance)
-        resp = update_db("Customers", {'balance': 0,'name':'', 'security':0, 'phone_number':''}, {'cid' : int(request.form['code'])})
+        resp = update_db("Customers", {'balance': 0,'name':'', 'security':0, 'phone_number':''}, {'cid' : int(code)})
         # print(resp)
         return {'status':'success', 'balance':cursor['balance'], 'security':cursor['security'] , 'total_sum' : cursor['balance'] + cursor['security']}
     return {'status': 'error', 'message' : 'Try Again'}

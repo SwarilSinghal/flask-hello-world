@@ -103,10 +103,14 @@
           // console.log(this.responseText);
           var data = JSON.parse(this.responseText);
           // console.log(data);
+
           if(security == false)
           alert('Credit Successful \n Amount: Rs.' + amount + '\nCurrent Balance : Rs.' + data['balance'] );
           else
-          alert('Credit Successful \n Amount: Rs.' + amount + '\nCurrent Balance :Rs.' + data['balance'] + '\nSecurity Deposit : Rs.50' );
+          {
+            amount = data['balance'] + 50;
+            alert('Credit Successful \n Amount: Rs.' + amount + '\nSecurity Deposit : Rs.50 \nCurrent Balance :Rs.' + data['balance']  );
+          }
           window.location = '/';
       }
 }
