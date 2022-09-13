@@ -36,18 +36,15 @@
     <br>
     <input name="email" class="form-control" type="number" id="amount"  placeholder=  "Enter Amount" disabled = "disabled">
     <br>
-    {% if  type == 'superuser' %}
-    {% if  logged_in == 'true' %}
+    
         <div>
           <input type="checkbox" id="security_deposit" name="security" value="50">
           <label for="cooking">Add Rs.50 as Security Deposit </label>
         </div>
-    {% endif %}
-    {% endif %}
     
-    <button type = "button" class = 'btn btn-primary' onclick = "this.disabled=true; credit( {{ Balance }}, {{ code }} )" > Credit </button>
+    <button type = "button" class = 'btn btn-primary' onclick = "this.disabled=true; credit( {{ Balance }}, {{ code }})" > Credit </button>
     <a class = "button btn btn-primary" href = "/scanQRcredit" >Scan QR</a>
-    <a class = "button btn btn-primary" href = "/logout" >Log Out</a>
+    <a class = "button btn btn-primary" href = "/" >Menu</a>
     <br> <br>
     <a href = '/lastCreditTransactions' class = "button btn btn-primary">Last 10 Credit Transactions</a> <br>
 </form>
@@ -60,10 +57,11 @@
   });
 </script>
     <script>
-        function credit(balance, code ) {
+        function credit(balance, code, type ) {
           const security_box = document.querySelector('#security_deposit');
           var security = false;
           var security_deposit = 0;
+          
           if (security_box.checked) {
             security = true;
             security_deposit = 50;
@@ -97,7 +95,8 @@
             balance: balance,
             name: name,
             phone_number: phone_number,
-            security_deposit : security_deposit
+            security_deposit : security_deposit,
+            security : security
         }));
         xhr.onload = function() {
           // console.log("HELLO")

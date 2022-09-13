@@ -22,7 +22,7 @@ mydb = client["cashManagement"]
 def menu():
 	if "username" in session and session['username'] != None:
 		
-		return render_template('menu.html',logged_in = 'true', type=session['type'], MoneyCollected=session['amount'], MoneyDeposited=session['amount_credited'] )
+		return render_template('menu.html',logged_in = 'true', type=session['type'], MoneyCollected=session['amount'], MoneyDeposited=session['amount_credited'], SecurityAmount = session['security_amount'] )
 	return render_template('login.html', message='Please login to your account')
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -67,13 +67,15 @@ def login():
 
 @app.route("/lastTransactions", methods=['POST', 'GET'])
 def lastDebitTransactions():
+    if "username" not in session or ("username" in session and session['username'] == None):
+        return render_template("login.html")
     if request.method == "GET":
         cursor = readTransactions('debitTransactions', {"user": session['username']})
         # if('status' in cursor and cursor['status'] == 'error'):
         #     return cursor
         #print(str(cursor['user']) + str(cursor['cid']))
         # print("TRANSACTION:" + str(cursor))
-        return render_template('lastTransactions.html', transaction=cursor, title = "Credit Transactions"  )
+        return render_template('lastTransactions.html', transaction=cursor, title = "Credit Transactions" , logged_in = 'true' )
         
         return list(cursor)
         return render_template('lastTransactions.html', transactions=list(cursor), title = "Credit Transactions")
@@ -86,11 +88,11 @@ def lastCreditTransactions():
         cursor = readTransactions('creditTransactions', {"user": session['username']})
         #print(str(cursor['user']) + str(cursor['cid']))
         # print("TRANSACTION:" + str(cursor))
-        return render_template('lastTransactions.html', transaction=cursor, title = "Credit Transactions")
+        return render_template('lastTransactions.html', transaction=cursor, title = "Debit Transactions")
         if(cursor['status'] and cursor['status'] == 'error'):
             return cursor
         return list(cursor)
-        return render_template('lastTransactions.html', transactions=list(cursor))
+        return render_template('lastTransactions.html', transactions=list(cursor) )
 
 
 
@@ -150,7 +152,7 @@ def viewBalance():
     # print(cursor)
     # print("END viewBalance")
     logged_in = "true"
-    return render_template("viewBalance.html", Username=cursor['name'], Balance=cursor['balance'], code=code, MoneyCollected=session['amount'])
+    return render_template("viewBalance.html", Username=cursor['name'], Balance=cursor['balance'], logged_in=logged_in, code=code, MoneyCollected=session['amount'])
 
 
 @app.route("/view", methods=["POST", "GET"])
@@ -187,7 +189,7 @@ def scanQRdebit():
     print("HOME session:", session)
     if "username" not in session or ("username" in session and session['username'] == None):
         return render_template("login.html")
-    return render_template('scanQRDebit.html')
+    return render_template('scanQRDebit.html',  logged_in="true")
 
 
 @app.route("/scanQRcredit")
@@ -195,7 +197,7 @@ def scanQRcredit():
     print("HOME session:", session)
     if "username" not in session or ("username" in session and session['username'] == None):
         return render_template("login.html")
-    return render_template('scanQRCredit.html')
+    return render_template('scanQRCredit.html', logged_in="true")
 
 
 
@@ -211,7 +213,7 @@ def viewBalanceCredit():
         return {'status':'error', 'message': 'DB read Failed!'}
     if "username" in session and session['username'] != None:
         logged_in = "true"
-    return render_template("viewBalanceCredit.html", Username=cursor['name'], Balance=cursor['balance'], code=code, logged_in=logged_in, phone_number = cursor['phone_number'], MoneyCollected=session['amount'], MoneyDeposited=session['amount_credited'])
+    return render_template("viewBalanceCredit.html", Username=cursor['name'], Balance=cursor['balance'], code=code, logged_in=logged_in, phone_number = cursor['phone_number'], MoneyCollected=session['amount'], MoneyDeposited=session['amount_credited'], type = session['type'])
 
 
 
@@ -370,6 +372,7 @@ def credit():
         # print("final Balance:", final_balance)
         # resp = update_db("Customers", document, {'cid' : str(json_req['code'])})
         ############ UPDATE CUSTOMERS ########
+        security = json_req['security']
         if security == True:
             document = { "$set" : {'balance': final_balance, 'name': json_req['name'], 'phone_number': json_req['phone_number'], 'security' : int(json_req['security_deposit'])}}
         else :
