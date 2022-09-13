@@ -36,7 +36,7 @@ def login():
     if hasattr(request, 'method') and request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
-        print("Login by username:" + username + ' password :' + password)
+        print("Login by username:" + str(username) + ' password :' + str(password))
         user_found = readDb( "Users" , {"username": username})
         # user_found = {'username' : 'swaril', 'password' : 'singhal'}
         #print("user Found" + str(user_found) + username)
@@ -44,7 +44,7 @@ def login():
             username = user_found['username']
             passwordcheck = user_found['password']
             if user_found and 'isLoggedIn' in user_found and user_found['isLoggedIn'] == True :
-                message = 'User is alredy Logged in in another device'
+                message = 'User is already Logged in in another device'
                 return render_template('login.html', message=message)
             resp = update_db("Users", {'isLoggedIn' : True}, {"username": username})
             
@@ -112,11 +112,29 @@ def lastCreditTransactions():
 
 
 
+
+
+
+@app.route("/lastSecurityDepositTransactions", methods=['POST', 'GET'])
+def lastSecurityDepositTransactions():
+    print("TEST")
+    if request.method == "GET":
+        print("lastCreditTransactions:" + session['username'])
+        cursor = readTransactions('creditTransactions', {"user": session['username'], 'security' : 1})
+        #print(str(cursor['user']) + str(cursor['cid']))
+        print("TRANSACTION:" + str(cursor))
+        return render_template('lastTransactions.html', transaction=cursor, title = "Credit Transactions", logged_in = "true", username = session['username'] )
+        if(cursor['status'] and cursor['status'] == 'error'):
+            return cursor
+
 def readTransactions(collection, condition):
     try:
         
         records = mydb[collection]
-        cursors = records.find(condition, {'amount':1, 'cid': 1, 'user':1, 'txn_id':1, 'time':1, 'security' : 1 }).sort('time',pymongo.DESCENDING).limit(10)
+        if session['type'] == 'superuser' :
+            cursors = records.find(condition, {'amount':1, 'cid': 1, 'user':1, 'txn_id':1, 'time':1, 'security' : 1 }).sort('time',pymongo.DESCENDING).limit(10)
+        else:
+            cursors = records.find(condition, {'amount':1, 'cid': 1, 'user':1, 'txn_id':1, 'time':1}).sort('time',pymongo.DESCENDING).limit(10)
         # cursors = records.find_one(condition)
         print("Read Transactions: " + str(cursors))
         return cursors
@@ -226,6 +244,8 @@ def viewBalanceCredit():
     # cursor = readDb('Customers', {"cid": code})
     try:
         cursor = mydb.Customers.find_one({"cid": code})
+        if cursor is None:
+            return {'status' : 'error', 'message' : 'No valid user for this QR code found, Please Try a valid QR code!'}
     except:
         return {'status':'error', 'message': 'DB read Failed!'}
     if "username" in session and session['username'] != None:
@@ -426,7 +446,7 @@ def credit():
         if security == True:
             document = {'cid' : int(json_req['code']), 'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'security': int(json_req['security_deposit']), 'status':'success' }
         else:
-                        document = {'cid' : int(json_req['code']), 'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount,  'status':'success' }
+                        document = {'cid' : int(json_req['code']), 'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'security':0,  'status':'success' }
         receipt = generate_credit_receipt(document)
         return {'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'cid' : int(json_req['code']), 'status':'success' }
     return {'status': 'error'}
@@ -477,8 +497,11 @@ def downloadDebitReport():
     #     csv = fp.read()
     records = mydb['debitTransactions']
     # print(records)
-    
-    cursor = records.find({"user": session['username']}, {'_id':1,'amount':1, 'cid': 1, 'user':1, 'txn_id':1, 'time':1})
+
+    if session['type'] == 'superuser' :
+        cursor = records.find({"user": session['username']}, {'_id':1,'amount':1, 'cid': 1, 'user':1, 'txn_id':1, 'time':1, 'security' :1})
+    else :
+        cursor = records.find({"user": session['username']}, {'_id':1,'amount':1, 'cid': 1, 'user':1, 'txn_id':1, 'time':1})
     # csv = list(csv)
     # df = pd.DataFrame(csv) 
     mongo_docs = list(cursor)
@@ -508,6 +531,45 @@ def downloadDebitReport():
         mimetype="text/json",
         headers={"Content-disposition":
                  "attachment; filename=" + fname + "debitTransactions.csv"})
+
+
+@app.route("/downloadSecurityDepositReport")
+def downloadSecurityDepositReport():
+    # with open("outputs/Adjacency.csv") as fp:
+    #     csv = fp.read()
+    records = mydb['creditTransactions']
+    # print(records)
+    
+    cursor = records.find({"user": session['username'], "security" : 50}, {'_id':1,'amount':1, 'cid': 1, 'user':1, 'txn_id':1, 'time':1, 'security':1})
+    # csv = list(csv)
+    # df = pd.DataFrame(csv) 
+    mongo_docs = list(cursor)
+    series_obj = pd.Series({"a key":"a value"})
+    series_obj = pd.Series( {"one":"index"} )
+    series_obj.index = [ "one" ]
+
+    docs = pd.DataFrame(columns=[])
+    for num, doc in enumerate( mongo_docs ):
+        doc["_id"] = str(doc["_id"])
+        doc_id = doc["_id"]
+        series_obj = pd.Series( doc, name=doc_id )
+        docs = docs.append( series_obj )
+    csv_export = docs.to_csv(sep=",") 
+     # CSV delimited by commas
+    # print ("\nCSV data:", csv_export) 
+    # df.to_csv('GFG.csv') 
+    # np.savetxt("GFG.csv", 
+    #        csv,
+    #        delimiter =", ", 
+    #        fmt ='% s')
+
+    # return redirect("/")
+    fname = str(session['username'])
+    return Response(
+        csv_export,
+        mimetype="text/json",
+        headers={"Content-disposition":
+                 "attachment; filename=" + fname + "creditTransactions.csv"})
 
 
 

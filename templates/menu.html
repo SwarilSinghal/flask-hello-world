@@ -25,16 +25,21 @@
 
 {% else %}
 <a href = '/scanQRdebit' class = "button btn btn-primary">Debit Money</a><br> <br>
-
-{% endif %}
-{% endif %}
 <a href = '/lastTransactions' class = "button btn btn-primary">Last 10 Debit Transactions</a> <br> <br>
-<a href = '/downloadDebitReport' class = "button btn btn-primary">Download Debit Transaction Report</a> <br> 
-{% if  type == 'superuser' %}
+<a href = '/downloadDebitReport' class = "button btn btn-primary">Download Debit Transaction Report</a> <br><br>
+{% endif %}
+{% endif %}
+
 {% if  logged_in == 'true' %}
-<br>
+{% if  type == 'superuser' %}
+<a href = '/lastTransactions' class = "button btn btn-primary">Last 10 Return Transactions</a> <br> <br>
+<a href = '/downloadDebitReport' class = "button btn btn-primary">Download Return Transaction Report</a> <br> <br>
+
 <a href = '/lastCreditTransactions' class = "button btn btn-primary">Last 10 Credit Transactions</a> <br> <br>
 <a href = '/downloadCreditReport' class = "button btn btn-primary">Download Credit Transaction Report</a> <br> <br>
+<a href = '/lastSecurityDepositTransactions' class = "button btn btn-primary">Last 10 Security Deposits</a> <br> <br>
+<a href = '/downloadSecurityDepositReport' class = "button btn btn-primary">Download Security Deposit Report</a> <br> <br>
+
 
 {% endif %}
 {% endif %}

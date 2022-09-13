@@ -103,7 +103,9 @@
           // console.log(this.responseText);
           var data = JSON.parse(this.responseText);
           // console.log(data);
-
+         if(data['status'] == 'error'){
+            alert(data['message'])
+         }
           if(security == false)
           alert('Credit Successful \n Amount: Rs.' + amount + '\nCurrent Balance : Rs.' + data['balance'] );
           else
