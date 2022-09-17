@@ -10,8 +10,17 @@
 {% endif %}
 
 <style type="text/css"> 
-  input[type="radio"]{margin-right: 20px;margin-left : 20px; } 
-  input[type = "form"]{margin-left : 10px;}
+  input[type="radio"]{margin-right: 20px;margin-left : 20px; accent-color: black; } 
+  input[type="radio"]:checked{
+    background-color: #ffa500;   
+    margin-right: 20px;margin-left : 20px; }
+  input[type = "form"]{margin-left : 10px;
+   border-radius: 14px;
+   }
+   input[type = "text"]{
+   border-radius: 14px;
+   background-color: white;
+   }
 </style>
 
 <form action="/menu" >
@@ -19,11 +28,11 @@
 	<!-- <label for="InputTotalDepositedAmount">Total Depoited Money</label>
     <input name="moneyDeposited" class="form-control" id="InputTotalDepositedAmount"  placeholder={{ MoneyDeposited }} disabled> -->
     <label for="InputUsername">Name</label>
-    <input name="email" class="form-control" id="InputUsername"  value={{ Username }} >
+    <input type="text" name="email" class="form-control" id="InputUsername"  value={{ Username }} >
     <label for="InputBalance">Balance</label>
-    <input name="email" class="form-control" id="InputBalance"  value= {{ Balance }} disabled>
+    <input name="email" type="text" class="form-control" id="InputBalance"  value= {{ Balance }} disabled>
     <label for="InputPhoneNumber">Phone Number</label>
-    <input name="email" class="form-control" id="InputPhoneNumber"  value={{ phone_number }} >
+    <input name="email" type="text" class="form-control" id="InputPhoneNumber"  value={{ phone_number }} >
     <label for="amount">Amount</label> <br>
     <input class = "radioBtn" type="radio" id="amount20" name="amount" value="50">
     <label for="amount20">50</label>
@@ -34,20 +43,20 @@
     <input class = "radioBtn" type="radio" id="other" name="amount" value= "Other">
     <label for="other">other</label>
     <br>
-    <input name="email" class="form-control" type="number" id="amount"  placeholder=  "Enter Amount" disabled = "disabled">
+    <input name="email" type= "text" class="form-control" type="number" id="amount"  placeholder=  "Enter Amount" disabled = "disabled">
     <br>
     
         <div>
             {% if security_deposit == 0 %}
             <input type="checkbox" id="security_deposit" name="security" value="50" checked>
             <label for="cooking">Add Rs.50 as Security Deposit </label>
-          {% endif %}
+            {% else %}
           <label for="Security">Security Deposited</label>
-          <input name="security" class="form-control" id="Security"  value= {{ security_deposit }} >
-          
+          <input name="security" type="text" class="form-control" id="Security"  value= {{ security_deposit }} >
+          {% endif %}
         </div>
     
-    <button type = "button" class = 'btn btn-primary' onclick = "this.disabled=true; credit( {{ Balance }}, {{ code }})" > Credit </button>
+    <button type = "button" class = 'button btn btn-primary' onclick = "this.disabled=true; credit( {{ Balance }}, {{ code }})" > Credit </button>
     <a class = "button btn btn-primary" href = "/scanQRcredit" >Scan QR</a>
     <a class = "button btn btn-primary" href = "/" >Menu</a>
     <br> <br>

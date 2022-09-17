@@ -8,17 +8,30 @@
         <p>{{ message }}</p>
     </div>
 {% endif %}
+<style type="text/css"> 
+    input[type="radio"]{margin-right: 20px;margin-left : 20px; accent-color: black; } 
+    input[type="radio"]:checked{
+      background-color: #ffa500;   
+      margin-right: 20px;margin-left : 20px; }
+    input[type = "form"]{margin-left : 10px;
+     border-radius: 14px;
+     }
+     input[type = "text"]{
+     border-radius: 14px;
+     background-color: white;
+     }
+  </style>
 
 <form action="/menu" >
 <!--    <input type="file" accept="image/*" capture="camera">-->
     <label for="InputUsername">Name</label>
-    <input name="email" class="form-control" id="InputUsername"  disabled = "true" value={{ Username }}  >
+    <input name="email"  type="text" class="form-control" id="InputUsername"  disabled = "true" value={{ Username }}  >
     <label for="InputPhoneNumber">Phone Number</label>
-    <input  name="email" class="form-control" id="InputPhoneNumber"  disabled = "true" value = {{ Phone_Number }} >
+    <input  name="email" type="text"  class="form-control" id="InputPhoneNumber"  disabled = "true" value = {{ Phone_Number }} >
     <label for="InputBalance">Balance</label>
-    <input  name="email" class="form-control" id="InputBalance" disabled placeholder= {{ Balance }} >
+    <input  name="email" type="text"  class="form-control" id="InputBalance" disabled placeholder= {{ Balance }} >
     <br>
-    <button type = "button" class = 'btn btn-primary' onclick = "last20Transaction( {{ code }} )" > Last 20 Debits </button>
+    <button type = "button" class = 'button btn btn-primary' onclick = "last20Transaction( {{ code }} )" > Last 20 Debits </button>
 </form>
 <script>
 

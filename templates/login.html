@@ -8,20 +8,36 @@
         <p>{{ message }}</p>
     </div>
 {% endif %}
-
+<style type="text/css"> 
+    input[type="radio"]{margin-right: 20px;margin-left : 20px; accent-color: black; } 
+    input[type="radio"]:checked{
+      background-color: #ffa500;   
+      margin-right: 20px;margin-left : 20px; }
+    input[type = "form"]{margin-left : 10px;
+     border-radius: 14px;
+     }
+     input[type = "password"]{
+     border-radius: 14px;
+     background-color: white;
+     }
+     input[type = "text"]{
+     border-radius: 14px;
+     background-color: white;
+     }
+  </style>
 <form action="/login" method="POST">
 <!--<div class="position-absolute top-50 start-50 translate-middle">-->
 <!--    <div class="row d-flex justify-content-center">-->
         <h2>Login</h2> <br>
   <div class="form-group">
       <label for="username">Username</label>
-      <input name="username" v-bind:class="{'form-control':true, 'is-invalid' : !validEmail(email) && emailBlured}" v-on:blur="emailBlured = true"  id="username"  placeholder="Enter username">
+      <input name="username" type="text" v-bind:class="{'form-control':true, 'is-invalid' : !validEmail(email) && emailBlured}" v-on:blur="emailBlured = true"  id="username"  placeholder="Enter username">
   </div><br>
     <div class="form-group">
       <label for="InputPassword">Password</label>
       <input type="password" name="password" v-bind:class="{'form-control':true, 'is-invalid' : !validEmail(email) && emailBlured}" v-on:blur="emailBlured = true" id="InputPassword" placeholder="Password">
   </div>
-  <button type="submit" class="btn btn-primary text-center d-flex flex-column">Submit</button>
+  <button type="submit" class="button btn btn-primary text-center d-flex flex-column">Submit</button>
 <!--        </div>-->
 </form>
 {% endblock %}

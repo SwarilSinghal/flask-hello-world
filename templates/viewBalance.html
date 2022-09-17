@@ -9,17 +9,30 @@
     </div>
 {% endif %}
 <style type="text/css"> 
-    input[type="radio"]{margin-right: 20px;margin-left : 20px; } 
-    input[type = "form"]{margin-left : 10px;}
+    input[type="radio"]{margin-right: 20px;margin-left : 20px; accent-color: black; } 
+    input[type="radio"]:checked{
+      background-color: #ffa500;   
+      margin-right: 20px;margin-left : 20px; }
+    input[type = "form"]{margin-left : 10px;
+     border-radius: 14px;
+     }
+     button[type = "button"]:hover{
+        background-color: black;
+        color : #deb444;
+     }
+     input[type = "text"]{
+     border-radius: 14px;
+     background-color: white;
+     }
   </style>
 
 <form action="{{ url_for('debit') }}" method = "post" >
 
     
     <label for="InputUsername">Name</label>
-    <input name="email" class="form-control" id="InputUsername"  placeholder= {{ Username }}  disabled = 'true'>
+    <input name="email"  type= "text" class="form-control" id="InputUsername"  placeholder= {{ Username }}  disabled = 'true'>
     <label for="InputBalance">Balance</label>
-    <input  name="email" class="form-control" id="InputBalance"  placeholder= {{ Balance }} disabled = 'true'>
+    <input  name="email"  type= "text"  class="form-control" id="InputBalance"  placeholder= {{ Balance }} disabled = 'true'>
     <label for="Amount">Amount</label><br>
     <input class = "radioBtn" type="radio" id="amount20" name="amount" value="20">
     <label for="amount20">20</label>
@@ -30,10 +43,10 @@
     <input class = "radioBtn" type="radio" id="other" name="amount" value= "Other">
     <label for="other">other</label>
     <br>
-    <input name="email" class="form-control" type="number" id="amount"  placeholder=  "Enter Amount" disabled = "disabled">
+    <input name="email"  type= "text"  class="form-control" type="number" id="amount"  placeholder=  "Enter Amount" disabled = "disabled">
     <br>
     <!-- <button type = "submit" class = 'btn btn-primary' > Debit1 </button> -->
-    <button type = "button" class = 'btn btn-primary' onclick = "this.disabled=true;credit( {{ Balance }}, {{ code }} )" > Debit </button>
+    <button type = "button" id = "debit" class = 'button btn btn-primary' onclick = "this.disabled=true;credit( {{ Balance }}, {{ code }} )" > Debit </button>
     <script type="text/javascript">
     $(".radioBtn").click(function() {
     $("#amount").attr("disabled", true);
@@ -46,7 +59,7 @@
     <a class = "button btn btn-primary" href = "/scanQRdebit" >Scan QR</a>
     <a class = "button btn btn-primary" href = "/" >Menu</a>
     <br> <br>
-    <button type = "button" class = 'btn btn-primary' onclick = "last10Transaction( {{ code }} )" > Last 10 Transaction </button>
+    <button type = "button" class = 'button btn btn-primary' onclick = "last10Transaction( {{ code }} )" > Last 10 Transaction </button>
 </form>
 <script type="text/javascript">  function preventBack() {window.history.forward();}  setTimeout("preventBack()", 0);  window.onunload = function () {null};</script>
     <script>
@@ -71,6 +84,8 @@
             }
             if( amount <= 0) {
                 alert("Enter valid Amount");
+                document.getElementById('debit').disabled = false;
+
                 return;
             }
 

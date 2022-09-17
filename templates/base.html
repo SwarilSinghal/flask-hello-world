@@ -11,22 +11,80 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
-<body >
+<body style="background-color: #deb444; font-family: Lucida Sans;">
+
+  <style>
+    .button {
+      background-color: #000000;
+      /* background-image: linear-gradient(#000000, grey); */
+      border-radius: 14px;;
+      color :#deb444;
+      font-family: Lucida Sans;
+      border-color: #aa8849;
+
+    }
+    button[type = "button"]:hover{
+        background-color: black;
+        color : #deb444;
+     }
+     .a:active{
+      background-color: black;
+     }
+    .button:active {
+      /* background:olive; */
+      background-color: #000000;
+      /* background-image: linear-gradient(#000000, grey); */
+      border-radius: 14px;;
+      color :#deb444;
+      font-family: Lucida Sans;
+      border-color: #aa8849;
+
+    }
+.form-control {
+  background-color: #aa8849;
+}
+.navbar {
+    width: 100%;  /* i'm assuming full width */
+    height: 80px; /* change it to desired width */
+     /* change to desired color */
+}
+.logo {
+    display: inline-block;
+    vertical-align: top;
+    width: 70px;
+    height: 70px;
+    margin-left : 1px;
+    margin-right: 1px;
+    margin-top: 1px;    /* if you want it vertically middle of the navbar. */
+}
+.name {
+    display: inline-block;
+    vertical-align: top;
+    width: 200px;
+    height: 70px;
+    margin-left : 1px;
+    margin-right: 1px;
+    margin-top: 0px;    /* if you want it vertically middle of the navbar. */
+}
+  </style>
 <!-- style=" background-image: url({{ url_for('static', filename='MA.png') }}); height: 100%; opacity : 0.6; background-position: center;background-repeat: no-repeat;background-size: cover;"> -->
 
 <!-- <img src = url({{ url_for('static', filename='MA.png') }}) style="background-size: cover; height: 100%;background-position: center;"> -->
   <div  > </div>
-<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
-  <h2 class="navbar-brand" >अग्रसेन जयंती महोत्सव</h2>
+<nav class="navbar navbar-light" style="background-color: #000000;  font-size: 14px ;" >
+  <img class = 'logo' src = {{ url_for('static', filename='logoYuvaManch.png') }}>
+  <!-- <img class = 'name' src = {{ url_for('static', filename='Name.png') }}> -->
+  <img class = 'name' src = {{ url_for('static', filename='name.png') }}>
+ <!-- <B><div class="navbar-brand" style ="font-size: 16px ; color:#deb444; font-family: DevLys 150  Condensed ; " >अग्रसेन जयंती महोत्सव </div> </B> -->
 <!--  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">-->
 <!--    <span class="navbar-toggler-icon"></span>-->
 <!--  </button>-->
  <!-- <div class="collapse navbar-collapse" id="navbarNavAltMarkup"> -->
-   <div class="navbar-nav">
+  
   {% if  logged_in == 'true' %}
-      <a class="button right" href="/logout">Logout</a>
+      <a class="button btn btn-primary right" href="/logout" style = "color: #000000; padding:2px ; background-color: #deb444; border-color: #aa8849;">Logout</a>
   {% endif %}
-    </div>
+
   <!-- </div> -->
 </nav>
 {% if  logged_in == 'true' %}

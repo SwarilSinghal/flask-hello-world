@@ -12,6 +12,10 @@
 <style type="text/css"> 
   input[type="radio"]{margin-right: 20px;margin-left : 20px; } 
   input[type = "form"]{margin-left : 10px;}
+
+  .form-control {
+  background-color: #aa8849;
+}
 </style>
 
 <form action="/menu" >
@@ -29,7 +33,7 @@
     <label for="amount"> Total Sum</label> <br>
     <input name="email" class="form-control" type="number" id="amount" disabled = "disabled" value = {{ amount }} >
     
-    <button type = "button" class = 'btn btn-primary' onclick = "finalDebit( {{ code }} )" > Return Card </button>
+    <button type = "button" class = 'button btn btn-primary' onclick = "finalDebit( {{ code }} )" > Return Card </button>
     <a class = "button btn btn-primary" href = "/scanQRcredit" >Scan QR</a>
     <a class = "button btn btn-primary" href = "/" >Menu</a>
     <br> <br>
