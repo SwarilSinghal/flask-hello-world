@@ -20,12 +20,19 @@ mydb = client["cashManagement"]
 
 @app.route('/')
 def menu():
+    # response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     if "username" in session and session['username'] != None:
         if session['type'] == 'superuser' :
             return render_template('menu.html',logged_in = 'true', type=session['type'], MoneyCollected=session['amount'], MoneyDeposited=session['amount_credited'], SecurityAmount = session['security_amount'], username = session['username'])
         else:
             return render_template('menu.html',logged_in = 'true', type=session['type'], MoneyCollected=session['amount'], username = session['username'] )
     return render_template('login.html', message='Please login to your account')
+
+
+@app.after_request
+def after_request(response):
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -111,6 +118,65 @@ def lastCreditTransactions():
             return cursor
 
 
+@app.route("/last20Transactions", methods=['POST', 'GET'])
+def last20Transactions():
+    if request.method == "GET":
+        code = int(request.args.get('code'))
+        if code is None:
+            return {'status': 'error', 'message': "Can't find the User"}   
+        try:
+            cursor = readDb('Customers', {"cid": code})
+        except:
+            return {'status':'error', 'message': 'DB read Failed!'}
+        cursor = readTransactions('debitTransactions', {"cid": code})
+        #print(str(cursor['user']) + str(cursor['cid']))
+        cursor = list(cursor)
+        print("TRANSACTION:" + str(cursor))
+        return render_template('lastTransactions.html', transaction=cursor, title = "Security Deposit Transactions", logged_in = "true", username = session['username'] )
+        if(cursor['status'] and cursor['status'] == 'error'):
+            return cursor
+
+
+
+
+@app.route("/downloadSecurityDepositRemainingReport")
+def downloadSecurityDepositRemainingReport():
+    # with open("outputs/Adjacency.csv") as fp:
+    #     csv = fp.read()
+    records = mydb['Customers']
+    # print(records)
+    
+    cursor = records.find({"security" : 50},{'_id':0})
+    # csv = list(csv)
+    # df = pd.DataFrame(csv) 
+    mongo_docs = list(cursor)
+    series_obj = pd.Series({"a key":"a value"})
+    series_obj = pd.Series( {"one":"index"} )
+    series_obj.index = [ "one" ]
+
+    docs = pd.DataFrame(columns=[])
+    for num, doc in enumerate( mongo_docs ):
+        doc["cid"] = str(doc["cid"])
+        doc_id = doc["cid"]
+        series_obj = pd.Series( doc, name=doc_id )
+        docs = docs.append( series_obj )
+    csv_export = docs.to_csv(sep=",") 
+     # CSV delimited by commas
+    # print ("\nCSV data:", csv_export) 
+    # df.to_csv('GFG.csv') 
+    # np.savetxt("GFG.csv", 
+    #        csv,
+    #        delimiter =", ", 
+    #        fmt ='% s')
+
+    # return redirect("/")
+    fname = str(session['username'])
+    return Response(
+        csv_export,
+        mimetype="text/json",
+        headers={"Content-disposition":
+                 "attachment; filename=" + fname + "RemainingSD.csv"})
+
 
 
 
@@ -120,10 +186,11 @@ def lastSecurityDepositTransactions():
     print("TEST")
     if request.method == "GET":
         print("lastCreditTransactions:" + session['username'])
-        cursor = readTransactions('creditTransactions', {"user": session['username'], 'security' : 1})
+        cursor = readTransactions('creditTransactions', {"user": session['username'], "security" : 50})
         #print(str(cursor['user']) + str(cursor['cid']))
+        cursor = list(cursor)
         print("TRANSACTION:" + str(cursor))
-        return render_template('lastTransactions.html', transaction=cursor, title = "Credit Transactions", logged_in = "true", username = session['username'] )
+        return render_template('lastTransactions.html', transaction=cursor, title = "Security Deposit Transactions", logged_in = "true", username = session['username'] )
         if(cursor['status'] and cursor['status'] == 'error'):
             return cursor
 
@@ -132,14 +199,14 @@ def readTransactions(collection, condition):
         
         records = mydb[collection]
         if session['type'] == 'superuser' :
-            cursors = records.find(condition, {'amount':1, 'cid': 1, 'user':1, 'txn_id':1, 'time':1, 'security' : 1 }).sort('time',pymongo.DESCENDING).limit(10)
+            cursors = records.find(condition, {'Name':1, 'amount':1, 'cid': 1, 'user':1, 'time':1, 'security' : 1, 'Phone_Number':1 }).sort('time',pymongo.DESCENDING).limit(10)
         else:
-            cursors = records.find(condition, {'amount':1, 'cid': 1, 'user':1, 'txn_id':1, 'time':1}).sort('time',pymongo.DESCENDING).limit(10)
+            cursors = records.find(condition, {'Name': 1, 'amount':1, 'cid': 1, 'user':1, 'txn_id':1, 'time':1, 'Phone_Number':1}).sort('time',pymongo.DESCENDING).limit(10)
         # cursors = records.find_one(condition)
         print("Read Transactions: " + str(cursors))
         return cursors
     except pymongo.errors.OperationFailure:
-        print("exceprion:" + e)
+        print("exception:" + e)
         return {'status':'error'}
 
 
@@ -195,7 +262,7 @@ def view():
     print("END viewBalance")
     if "username" in session and session['username'] != None:
         logged_in = "true"
-    return render_template("view.html", Username=cursor['name'], Balance=cursor['balance'], Phone_Number = cursor['phone_number'])
+    return render_template("view.html", Username=cursor['name'], Balance=cursor['balance'], Phone_Number = cursor['phone_number'], code = code)
 
 
 
@@ -215,6 +282,7 @@ def readDb(collection, condition):
 
 @app.route("/scanQRdebit")
 def scanQRdebit():
+    # response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     print("HOME session:", session)
     if "username" not in session or ("username" in session and session['username'] == None):
         return render_template("login.html")
@@ -250,7 +318,7 @@ def viewBalanceCredit():
         return {'status':'error', 'message': 'DB read Failed!'}
     if "username" in session and session['username'] != None:
         logged_in = "true"
-    return render_template("viewBalanceCredit.html", Username=cursor['name'], Balance=cursor['balance'], code=code, logged_in=logged_in, phone_number = cursor['phone_number'], MoneyCollected=session['amount'], MoneyDeposited=session['amount_credited'], type = session['type'], username = session['username'] )
+    return render_template("viewBalanceCredit.html", Username=cursor['name'], Balance=cursor['balance'], code=code, logged_in=logged_in, phone_number = cursor['phone_number'], MoneyCollected=session['amount'], MoneyDeposited=session['amount_credited'], type = session['type'], username = session['username'], security_deposit = cursor['security'] )
 
 
 
@@ -282,7 +350,7 @@ def reset():
         session['amount'] = amount_collected
         resp = update_db('Users', {'amount': amount_collected, 'security' : security_collected}, {'username' : session['username']})
         print(resp)
-        document = {'amount': cursor['balance'], 'cid' : int(json_req['code']) , 'security' : cursor['security'] }
+        document = {'Name':cursor['name'],'amount': cursor['balance'], 'cid' : int(json_req['code']) , 'security' : cursor['security'] , 'Phone_Number': cursor['phone_number']}
         receipt = generate_debit_receipt(document)
 
         # print("final Balance:", final_balance)
@@ -323,7 +391,7 @@ def debit():
         # resp = update_db('Users', {'amount': amount_collected}, {'username' : session['username']})
         resp = mydb.Users.update_one({'username' : session['username']},{ '$set' :{'amount': amount_collected} })
         # print(resp)
-        document = {'amount': json_req['amount'], 'cid' : int(json_req['code']) }
+        document = {'Name': cursor['name'], 'amount': json_req['amount'], 'cid' : int(json_req['code']), 'Phone_Number':cursor['phone_number'] }
         receipt = generate_debit_receipt(document)
 
         # print("final Balance:", final_balance)
@@ -357,6 +425,7 @@ def generate_debit_receipt(document):
         document['user'] = session['username']
         document['txn_id'] = 'CT' + rand_string()
         document['time'] = datetime.datetime.now(pytz.timezone('Asia/Kolkata'))
+        document['time'] = document['time'].strftime("%Y-%m-%d %H:%M:%S")
         # mongo_uri = "mongodb://swaril:" + urllib.parse.quote(
         #     "$w@R!1") + "@ac-ymz3eon-shard-00-00.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-01.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-02.iympypo.mongodb.net:27017/?ssl=true&replicaSet=atlas-y20jq1-shard-0&authSource=admin&retryWrites=true&w=majority"
         # client = pymongo.MongoClient(
@@ -375,6 +444,7 @@ def generate_credit_receipt(document):
         document['user'] = session['username']
         document['txn_id'] = 'CT' + rand_string()
         document['time'] = datetime.datetime.now(pytz.timezone('Asia/Kolkata'))
+        document['time'] = document['time'].strftime("%Y-%m-%d %H:%M:%S")
         print(document['time'])
         # mongo_uri = "mongodb://swaril:" + urllib.parse.quote(
         #     "$w@R!1") + "@ac-ymz3eon-shard-00-00.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-01.iympypo.mongodb.net:27017,ac-ymz3eon-shard-00-02.iympypo.mongodb.net:27017/?ssl=true&replicaSet=atlas-y20jq1-shard-0&authSource=admin&retryWrites=true&w=majority"
@@ -403,12 +473,12 @@ def credit():
         ################ READ DB  #########
         
         Cust_coll = mydb['Customers']
-        cursor = Cust_coll.find_one({"cid": int(json_req['code'])})
+        customer = Cust_coll.find_one({"cid": int(json_req['code'])})
 
         ################
         # print('checking paraments',json_req['code'], json_req['amount'])
         # print("Read DB:", cursor)
-        final_balance = int(cursor['balance']) + int(json_req['amount'])
+        final_balance = int(customer['balance']) + int(json_req['amount'])
         document = {'balance': final_balance, 'name': json_req['name'], 'phone_number': json_req['phone_number']}
         # print("final Balance:", final_balance)
         # resp = update_db("Customers", document, {'cid' : str(json_req['code'])})
@@ -442,11 +512,12 @@ def credit():
         # document = {'amount': json_req['amount'], 'cid' : json_req['code'] }
        
         # print("CREATE RECEIPT:" + str(receipt))
+        print("CURSOR:" + str(customer))
         session['amount_credited'] = total_amount
         if security == True:
-            document = {'cid' : int(json_req['code']), 'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'security': int(json_req['security_deposit']), 'status':'success' }
+            document = {'Name':customer['name'], 'cid' : int(json_req['code']), 'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'Phone_Number': customer['phone_number'], 'security': int(json_req['security_deposit']), 'status':'success' }
         else:
-                        document = {'cid' : int(json_req['code']), 'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'security':0,  'status':'success' }
+            document = {'Name': customer['name'], 'cid' : int(json_req['code']), 'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'Phone_Number': customer['phone_number'], 'security':0,  'status':'success' }
         receipt = generate_credit_receipt(document)
         return {'amount': json_req['amount'],'balance':final_balance,'amount_credited':total_amount, 'cid' : int(json_req['code']), 'status':'success' }
     return {'status': 'error'}

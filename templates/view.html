@@ -17,5 +17,14 @@
     <input  name="email" class="form-control" id="InputPhoneNumber"  disabled = "true" value = {{ Phone_Number }} >
     <label for="InputBalance">Balance</label>
     <input  name="email" class="form-control" id="InputBalance" disabled placeholder= {{ Balance }} >
+    <br>
+    <button type = "button" class = 'btn btn-primary' onclick = "last20Transaction( {{ code }} )" > Last 20 Debits </button>
 </form>
+<script>
+
+function last20Transaction(code){
+	        window.location = '/last20Transactions?code='+code;	
+        }
+
+</script>
 {% endblock %}

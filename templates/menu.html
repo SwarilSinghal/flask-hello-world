@@ -17,31 +17,38 @@
 
 {% if  logged_in == 'true' %}
 {% if  type == 'superuser' %}
-<a href = '/scanQRcredit' class = "button btn btn-primary">Credit Money</a><br>
+<a href = '/scanQRcredit' class = "button btn btn-primary" style ="width: 300px;">Credit Money</a><br>
 <br>
-<a href = '/scanQRreturnCard' class = "button btn btn-primary">Return Card</a><br>
+<a href = '/scanQRreturnCard' class = "button btn btn-primary" style ="width: 300px;">Return Card</a><br>
 <br>
 
 
 {% else %}
-<a href = '/scanQRdebit' class = "button btn btn-primary">Debit Money</a><br> <br>
-<a href = '/lastTransactions' class = "button btn btn-primary">Last 10 Debit Transactions</a> <br> <br>
-<a href = '/downloadDebitReport' class = "button btn btn-primary">Download Debit Transaction Report</a> <br><br>
+<a href = '/scanQRdebit' class = "button btn btn-primary" style ="width: 300px;">Debit Money</a><br> <br>
+<a href = '/lastTransactions' class = "button btn btn-primary" style ="width: 300px;">Last 10 Debit Transactions</a> <br> <br>
+<a href = '/downloadDebitReport' class = "button btn btn-primary" style ="width: 300px;">Download Debit Transaction Report</a> <br><br>
 {% endif %}
 {% endif %}
 
 {% if  logged_in == 'true' %}
 {% if  type == 'superuser' %}
-<a href = '/lastTransactions' class = "button btn btn-primary">Last 10 Return Transactions</a> <br> <br>
-<a href = '/downloadDebitReport' class = "button btn btn-primary">Download Return Transaction Report</a> <br> <br>
+<a href = '/lastTransactions' class = "button btn btn-primary" style ="width: 300px;">Last 10 Return Transactions</a> <br> <br>
+<a href = '/downloadDebitReport' class = "button btn btn-primary" style ="width: 300px;">Download Return Transaction Report</a> <br> <br>
 
-<a href = '/lastCreditTransactions' class = "button btn btn-primary">Last 10 Credit Transactions</a> <br> <br>
-<a href = '/downloadCreditReport' class = "button btn btn-primary">Download Credit Transaction Report</a> <br> <br>
-<a href = '/lastSecurityDepositTransactions' class = "button btn btn-primary">Last 10 Security Deposits</a> <br> <br>
-<a href = '/downloadSecurityDepositReport' class = "button btn btn-primary">Download Security Deposit Report</a> <br> <br>
-
+<a href = '/lastCreditTransactions' class = "button btn btn-primary" style ="width: 300px;">Last 10 Credit Transactions</a> <br> <br>
+<a href = '/downloadCreditReport' class = "button btn btn-primary" style ="width: 300px;">Download Credit Transaction Report</a> <br> <br>
+<a href = '/lastSecurityDepositTransactions' class = "button btn btn-primary" style ="width: 300px;">Last 10 Security Deposits</a> <br> <br>
+<a href = '/downloadSecurityDepositReport' class = "button btn btn-primary" style ="width: 300px;">Download Security Deposit Report</a> <br> <br>
+<a href = '/downloadSecurityDepositRemainingReport' class = "button btn btn-primary" style ="width: 300px;">Remaining Security Deposit Report</a> <br> <br> 
 
 {% endif %}
 {% endif %}
 </center>
+
+<!-- <script type="text/javascript">
+    window.history.forward();
+    function noBack() {
+        window.history.forward();
+    }
+</script> -->
 {% endblock %}

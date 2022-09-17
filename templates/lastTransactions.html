@@ -4,34 +4,35 @@
 {% block content %}
 <h6>{{ title }} </h6>
 <table id="TransactionTable" align="left" border="1" cellpadding="3" cellspacing="0">
-  <caption><a class = "button btn btn-primary" href = "/" >Menu</a></caption>
-<tr>
-{% for data in transaction[0] %}
-  
+  <caption><a class="button btn btn-primary" href="/">Menu</a></caption>
+  <tr>
+    {% for data in transaction[0] %}
+
     <td>
       {{ data }}
     </td>
-  
-{% endfor %}
-<tr>
-{% for data in transaction %}
+
+    {% endfor %}
+  <tr>
+    {% for data in transaction %}
   <tr>
     {% for cell in data %}
     <td>
       {{ data[cell] }}
     </td>
-   {% endfor %}
+    {% endfor %}
   </tr>
-{% endfor %}
+  {% endfor %}
 </table>
 
 {% endblock %}
 
 <script>
-<!--    function myFunction() {-->
-<!--  var x = document.createElement("TH");-->
-<!--  var t = document.createTextNode("table header cell");-->
-<!--  x.appendChild(t);-->
-<!--  document.getElementById("myTr").appendChild(x);-->
-<!--}-->
+< !--    function myFunction() {
+    -->
+< !--  var x = document.createElement("TH"); -->
+< !--  var t = document.createTextNode("table header cell"); -->
+< !--x.appendChild(t); -->
+< !--document.getElementById("myTr").appendChild(x); -->
+< !--}-->
 </script>

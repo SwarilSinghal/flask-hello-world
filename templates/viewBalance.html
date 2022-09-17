@@ -48,6 +48,7 @@
     <br> <br>
     <button type = "button" class = 'btn btn-primary' onclick = "last10Transaction( {{ code }} )" > Last 10 Transaction </button>
 </form>
+<script type="text/javascript">  function preventBack() {window.history.forward();}  setTimeout("preventBack()", 0);  window.onunload = function () {null};</script>
     <script>
 
         function last10Transaction(code){
@@ -92,6 +93,7 @@
                     alert(data['message']);
                     window.location = '/';
                 }
+                // window.location = '/login';
                 window.location = '/';
             }
         // console.log([data['total_amount_debited']])

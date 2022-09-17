@@ -38,8 +38,13 @@
     <br>
     
         <div>
-          <input type="checkbox" id="security_deposit" name="security" value="50">
-          <label for="cooking">Add Rs.50 as Security Deposit </label>
+            {% if security_deposit == 0 %}
+            <input type="checkbox" id="security_deposit" name="security" value="50" checked>
+            <label for="cooking">Add Rs.50 as Security Deposit </label>
+          {% endif %}
+          <label for="Security">Security Deposited</label>
+          <input name="security" class="form-control" id="Security"  value= {{ security_deposit }} >
+          
         </div>
     
     <button type = "button" class = 'btn btn-primary' onclick = "this.disabled=true; credit( {{ Balance }}, {{ code }})" > Credit </button>
@@ -56,13 +61,14 @@
       }
   });
 </script>
+<script type="text/javascript">  function preventBack() {window.history.forward();}  setTimeout("preventBack()", 0);  window.onunload = function () {null};</script>
     <script>
         function credit(balance, code, type ) {
           const security_box = document.querySelector('#security_deposit');
           var security = false;
           var security_deposit = 0;
           
-          if (security_box.checked) {
+          if ( security_box && security_box.checked) {
             security = true;
             security_deposit = 50;
           }
@@ -107,14 +113,14 @@
             alert(data['message'])
          }
           if(security == false)
-          alert('Credit Successful \n Amount: Rs.' + amount + '\nCurrent Balance : Rs.' + data['balance'] );
+          alert('Credit Successful \n Amount: Rs.' + amount + '\nCurrent Balance : Rs.' + data['balance'] + '\nAmount to be Taken : Rs.' + amount);
           else
           {
-            // amount = amount + 50;
-            alert('Credit Successful \n Amount: Rs.' + amount + '\nSecurity Deposit : Rs.50 \nCurrent Balance :Rs.' + data['balance']  );
+             total_amount = amount + 50;
+            alert('Credit Successful \n Amount: Rs.' + amount + '\nSecurity Deposit : Rs.50 \nCurrent Balance : Rs.' + data['balance'] + '\n Amount to be Taken : Rs.' +  total_amount );
           }
           window.location = '/';
-      }
+        }
 }
     </script>
 {% endblock %}
