@@ -348,7 +348,7 @@ def reset():
         security_collected =  session['security_amount'] - cursor['security']
         session['security_amount'] = security_collected
         session['amount'] = amount_collected
-        resp = update_db('Users', {'amount': amount_collected, 'security' : security_collected}, {'username' : session['username']})
+        resp = update_db('Users', {'amount': amount_collected, 'security_amount' : security_collected}, {'username' : session['username']})
         print(resp)
         document = {'Name':cursor['name'],'amount': cursor['balance'], 'cid' : int(json_req['code']) , 'security' : cursor['security'] , 'Phone_Number': cursor['phone_number']}
         receipt = generate_debit_receipt(document)
