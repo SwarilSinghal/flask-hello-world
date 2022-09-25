@@ -9,6 +9,9 @@
     </div>
 {% endif %}
 <style type="text/css"> 
+    form {
+
+    }
     input[type="radio"]{margin-right: 20px;margin-left : 20px; accent-color: black; } 
     input[type="radio"]:checked{
       background-color: #ffa500;   
@@ -26,7 +29,7 @@
      }
   </style>
 
-<form action="{{ url_for('debit') }}" method = "post" >
+<form style="padding: 3px;" action="{{ url_for('debit') }}" method = "post" >
 
     
     <label for="InputUsername">Name</label>
@@ -36,10 +39,12 @@
     <label for="Amount">Amount</label><br>
     <input class = "radioBtn" type="radio" id="amount20" name="amount" value="20">
     <label for="amount20">20</label>
+    <input class = "radioBtn" type="radio" id="amount30" name="amount" value="30">
+    <label for="amount50">30</label><br>
+    <input class = "radioBtn" type="radio" id="amount40" name="amount" value="40">
+    <label for="amount100">40</label>
     <input class = "radioBtn" type="radio" id="amount50" name="amount" value="50">
-    <label for="amount50">50</label><br>
-    <input class = "radioBtn" type="radio" id="amount100" name="amount" value="100">
-    <label for="amount100">100</label>
+    <label for="amount100">50</label>
     <input class = "radioBtn" type="radio" id="other" name="amount" value= "Other">
     <label for="other">other</label>
     <br>

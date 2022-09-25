@@ -1,0 +1,28 @@
+{
+    "_id": {
+        "$oid": "631e32f0f1d7e3b5816546f2"
+    },
+    "cid": {
+        "$numberInt": "8005"
+    },
+    "name": "",
+    "balance": {
+        "$numberInt": "0"
+    },
+    "security": {
+        "$numberInt": "0"
+    },
+    "phone_number": ""
+}
+
+
+{"_id":{"$oid":"631e30e26b6c431886cfc345"},"username":"T4","password":"1234","amount":{"$numberInt":"120"},"type":"user","isLoggedIn":false,"amount_credited":{"$numberInt":"0"}}
+
+
+{"_id":{"$oid":"631e315954074c239078ec2b"},"username":"CT3","password":"1234","amount":{"$numberInt":"220"},"type":"superuser","isLoggedIn":true,"amount_credited":{"$numberInt":"270"},"security_amount":{"$numberInt":"50"},"security":{"$numberInt":"0"}}
+
+
+{"_id":{"$oid":"6319f2d81275bf85de87fd10"},"amount":"1000","cid":{"$numberInt":"1234"},"user":"sameer","txn_id":"CT3VFSLVO9","time":{"$date":{"$numberLong":"1662644952120"}}}
+
+
+{"_id":{"$oid":"6320aaff6fc1afbb8e75b818"},"amount":{"$numberInt":"0"},"cid":{"$numberInt":"8213"},"security":{"$numberInt":"0"},"user":"CT3","txn_id":"CTLKWJVEWF","time":{"$date":{"$numberLong":"1663085311991"}}}
